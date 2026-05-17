@@ -611,6 +611,9 @@ function fmtDriveDate(iso){ if(!iso) return ''; var d=new Date(iso); return d.to
 
 // ─── TABS ──────────────────────────────────────────────────────────────────
 function showTab(t){
+  /* Sauvegarder le bloc-notes si on le quitte */
+  var curTab=document.querySelector('.tab.active');
+  if(curTab&&(curTab.dataset.tab==='notes')&&t!=='notes') saveNotePage();
   ['fichiers','pointage','plans','notes','photos','avancement'].forEach(function(n){
     var el=document.getElementById('tab-'+n); if(el) el.style.display=n===t?'block':'none';
   });
