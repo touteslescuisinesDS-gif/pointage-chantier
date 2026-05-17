@@ -577,7 +577,7 @@ let viewPhotoId=null;
 // ─── INDEXEDDB ─────────────────────────────────────────────────────────────
 function initDB(){
   return new Promise(function(resolve,reject){
-    var req=indexedDB.open('tlci_chantier',4);
+    var req=indexedDB.open('tlci_chantier',5);
     req.onupgradeneeded=function(e){
       var d=e.target.result;
       if(!d.objectStoreNames.contains('photos')){
@@ -588,6 +588,7 @@ function initDB(){
       if(!d.objectStoreNames.contains('notes')) d.createObjectStore('notes',{keyPath:'page'});
       if(!d.objectStoreNames.contains('pdfs')) d.createObjectStore('pdfs',{keyPath:'name'});
       if(!d.objectStoreNames.contains('annotations')) d.createObjectStore('annotations',{keyPath:'key'});
+      if(!d.objectStoreNames.contains('xlsfile')) d.createObjectStore('xlsfile',{keyPath:'id'});
     };
     req.onsuccess=function(e){ db=e.target.result; resolve(db); };
     req.onerror=function(e){ reject(e); };
@@ -1611,7 +1612,15 @@ function syncRow(row){
 function setCell(ws,col,row,val){ var addr=XLSX.utils.encode_cell({r:row,c:col}); if(!val){delete ws[addr];return;} ws[addr]={v:val,t:'s'}; }
 
 function exportXLSX(){
-  if(!wb){alert('Aucun fichier charg\u00e9.');return;}
+  if(!wb){ snack('\u23f3 Chargement du fichier\u2026');
+    if(db){ dbGetAll('xlsfile').then(function(rows){
+      if(!rows||!rows.length){ alert('Aucun fichier charg\u00e9.'); return; }
+      try{ wb=XLSX.read(rows[0].data,{type:'array'}); exportXLSX(); }
+      catch(e){ alert('Erreur restauration fichier: '+e.message); }
+    }).catch(function(){ alert('Aucun fichier charg\u00e9.'); }); }
+    else { alert('Aucun fichier charg\u00e9.'); }
+    return;
+  }
   wsData.filter(function(r){return r._row>=0;}).forEach(syncRow);
   var ws=wb.Sheets['Mater'], range=XLSX.utils.decode_range(ws['!ref']||'A1');
   var nextRow=range.e.r+1;
@@ -1731,7 +1740,15 @@ async function importSelectedPDFs(){
   renderPdfTabs(); renderPdfFileList(); snack('📄 PDF import\u00e9(s)','#1e8a4a');
 }
 async function exportToDrive(){
-  if(!wb){alert('Aucun fichier charg\u00e9.');return;} if(!driveToken||!folderIds.xls){alert('Connectez-vous \u00e0 Drive.');return;}
+  if(!wb){ snack('\u23f3 Chargement du fichier\u2026'); 
+    if(db){ dbGetAll('xlsfile').then(function(rows){
+      if(!rows||!rows.length){ alert('Aucun fichier charg\u00e9.'); return; }
+      try{ wb=XLSX.read(rows[0].data,{type:'array'}); exportToDrive(); }
+      catch(e){ alert('Erreur restauration fichier: '+e.message); }
+    }).catch(function(){ alert('Aucun fichier charg\u00e9.'); }); }
+    else { alert('Aucun fichier charg\u00e9.'); }
+    return;
+  } if(!driveToken||!folderIds.xls){alert('Connectez-vous \u00e0 Drive.');return;}
   wsData.filter(function(r){return r._row>=0;}).forEach(syncRow);
   var ws=wb.Sheets['Mater'], range=XLSX.utils.decode_range(ws['!ref']||'A1');
   var nextRow=range.e.r+1;
@@ -1762,6 +1779,14 @@ async function exportToDrive(){
 // ─── PERSISTANCE ─────────────────────────────────────────────────────────────
 function saveLocal(){
   try{ localStorage.setItem('tlci_data',JSON.stringify(wsData)); localStorage.setItem('tlci_lots',JSON.stringify(lots)); localStorage.setItem('tlci_fileName',fileName); }catch(e){}
+  /* Sauvegarder le binaire XLS en IDB pour export sans re-import */
+  if(db&&wb){
+    try{
+      var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+      dbPut('xlsfile',{id:'current',data:new Uint8Array(wbout),fileName:fileName,savedAt:Date.now()})
+        .catch(function(e){ console.warn('XLS IDB save:',e); });
+    }catch(e){ console.warn('XLS serialize:',e); }
+  }
 }
 function savePdfLS(name,data){
   if(db){
@@ -1772,7 +1797,17 @@ function savePdfLS(name,data){
 function loadLocal(){
   try{
     var d=localStorage.getItem('tlci_data');
-    if(d){ wsData=JSON.parse(d); lots=JSON.parse(localStorage.getItem('tlci_lots')||'[]'); fileName=localStorage.getItem('tlci_fileName')||''; populateFilters(); renderLocalList(); showXLSOk(); setTimeout(updateVuBar,300); }
+    if(d){ wsData=JSON.parse(d); lots=JSON.parse(localStorage.getItem('tlci_lots')||'[]'); fileName=localStorage.getItem('tlci_fileName')||''; populateFilters(); renderLocalList(); showXLSOk(); setTimeout(updateVuBar,300);
+      /* Restaurer le workbook XLS depuis IDB */
+      if(db){
+        dbGetAll('xlsfile').then(function(rows){
+          if(!rows||!rows.length) return;
+          var rec=rows[0];
+          try{ wb=XLSX.read(rec.data,{type:'array'}); console.log('XLS restauré depuis IDB'); }
+          catch(e){ console.warn('XLS IDB restore:',e); }
+        }).catch(function(){});
+      }
+    }
     if(db){
       dbGetAll('pdfs').then(function(rows){
         if(!rows||!rows.length) return;
