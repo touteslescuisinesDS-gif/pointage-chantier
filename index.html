@@ -1410,9 +1410,19 @@ function openPhotoCapture(cardId){
 function openCameraStream(){
   var popup=document.getElementById('cameraPopup'),video=document.getElementById('cameraVideo');
   if(!popup||!video){ document.getElementById('photoInput').click(); return; }
-  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false})
-    .then(function(stream){ W._camStream=stream; video.srcObject=stream; video.play(); popup.classList.add('open'); })
-    .catch(function(e){ console.warn('Camera err:',e); document.getElementById('photoInput').click(); });
+  /* Essayer d'abord la caméra arrière en exact, puis en ideal, puis sans contrainte */
+  var constraints=[
+    {video:{facingMode:{exact:'environment'}},audio:false},
+    {video:{facingMode:'environment'},audio:false},
+    {video:true,audio:false}
+  ];
+  function tryNext(i){
+    if(i>=constraints.length){ document.getElementById('photoInput').click(); return; }
+    navigator.mediaDevices.getUserMedia(constraints[i])
+      .then(function(stream){ W._camStream=stream; video.srcObject=stream; video.play(); popup.classList.add('open'); })
+      .catch(function(){ tryNext(i+1); });
+  }
+  tryNext(0);
 }
 function stopCameraStream(){
   if(W._camStream){ W._camStream.getTracks().forEach(function(t){t.stop();}); W._camStream=null; }
