@@ -199,7 +199,7 @@ textarea{resize:vertical;min-height:60px;line-height:1.5}
 .zb-ln{font-size:13px;font-weight:600;flex:1}
 .zb-pills{display:flex;gap:4px;flex-shrink:0}
 .zpill{font-size:10px;font-weight:700;padding:2px 6px;border-radius:4px}
-#pdfView{display:flex;flex-direction:column;height:100%;overflow:hidden;margin:-20px}
+#pdfView{display:flex;flex-direction:column;height:100%;overflow:hidden}
 /* Onglets PDF intégrés dans tabBar principale */
 .pdf-tab-main{display:flex;align-items:center;gap:4px;padding:0 12px;border:none;border-bottom:3px solid transparent;background:transparent;color:var(--muted);font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;margin-bottom:-2px;white-space:nowrap;flex-shrink:0;max-width:160px;overflow:hidden;text-overflow:ellipsis}
 .pdf-tab-main:hover{color:var(--blue)}
@@ -213,8 +213,8 @@ textarea{resize:vertical;min-height:60px;line-height:1.5}
 .cdot.sel{border-color:var(--text)}
 .ni{font-size:12px;color:var(--muted);white-space:nowrap;flex-shrink:0;min-width:44px;text-align:center}
 input[type=range]{width:60px;accent-color:var(--blue);flex-shrink:0}
-#pdfWrap{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:16px;background:var(--bg)}
-#cStack{position:relative;display:none;line-height:0;box-shadow:0 4px 24px rgba(0,0,0,.2)}
+#pdfWrap{flex:1;overflow:scroll;display:flex;align-items:flex-start;justify-content:flex-start;padding:16px;background:var(--bg);-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+#cStack{position:relative;display:none;line-height:0;box-shadow:0 4px 24px rgba(0,0,0,.2);flex-shrink:0}
 #pdfC{display:block}
 #anotC{position:absolute;top:0;left:0;z-index:2;cursor:crosshair;touch-action:none}
 #hlC{position:absolute;top:0;left:0;z-index:3;pointer-events:none}
@@ -617,12 +617,26 @@ function showTab(t){
   if(activePdf&&t!=='plans') saveSnap();
   document.getElementById('leftPanel').classList.toggle('hidden',t!=='pointage');
   if(t==='avancement') renderAvancement();
-  if(t==='plans') fixPdfH();
+  if(t==='plans'){
+    fixPdfH();
+    document.getElementById('rightPanel').style.overflow='hidden';
+    document.getElementById('rightPanel').style.padding='0';
+  } else {
+    document.getElementById('rightPanel').style.overflow='';
+    document.getElementById('rightPanel').style.padding='';
+  }
   if(t==='notes') initNoteCanvas();
   if(t==='photos') renderPhotoGallery();
   if(t==='pointage') updateVuBar();
 }
-function fixPdfH(){ var pv=document.getElementById('pdfView'),rp=document.getElementById('rightPanel'); if(pv&&rp) pv.style.height=rp.clientHeight+'px'; }
+function fixPdfH(){
+  var pv=document.getElementById('pdfView');
+  var rp=document.getElementById('rightPanel');
+  if(!pv||!rp) return;
+  /* Prendre toute la hauteur de rightPanel (padding compris) */
+  pv.style.height=rp.clientHeight+'px';
+  pv.style.width=rp.clientWidth+'px';
+}
 
 // ─── XLS ───────────────────────────────────────────────────────────────────
 function loadXLS(inp){
