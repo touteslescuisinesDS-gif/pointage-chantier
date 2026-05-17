@@ -1495,7 +1495,9 @@ async function saveAnnotPhoto(){
   var merged=document.createElement('canvas'); merged.width=canvas.width; merged.height=canvas.height;
   var ctx=merged.getContext('2d'); ctx.drawImage(canvas,0,0); ctx.drawImage(annotC,0,0);
   var dataUrl=merged.toDataURL('image/jpeg',0.85);
-  var photoName=row.repere+'_'+Date.now().toString(36).toUpperCase();
+  var d=new Date();
+  var photoDate=d.getFullYear()+'_'+String(d.getMonth()+1).padStart(2,'0')+'_'+String(d.getDate()).padStart(2,'0');
+  var photoName=row.repere+'_'+photoDate;
   var record={repere:row.repere||'',local:row.local||'',materiel:row.materiel||'',name:photoName,date:new Date().toISOString(),dataUrl:dataUrl};
   await dbPut('photos',record);
   // Ajouter remarque automatique
