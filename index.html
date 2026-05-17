@@ -333,7 +333,7 @@ input[type=number]{-moz-appearance:textfield}
             <div class="drive-bar"><div class="db-dot"></div><div style="flex:1"><div class="db-name" id="driveName">—</div><div class="db-email" id="driveEmail">—</div></div><button class="btn-drive danger" onclick="driveLogout()">Déconnecter</button></div>
             <div class="dsec"><div class="dsec-ttl">📊 Pointage / Materiels</div><div id="driveXlsList" class="dfile-list"><span class="spinner"></span> Chargement…</div><button class="btn-drive" onclick="importSelectedXLS()" id="btnImportXls" disabled style="width:100%;justify-content:center">📥 Importer le fichier sélectionné</button></div>
             <div class="dsec"><div class="dsec-ttl">📄 Pointage / Fichiers (PDF)</div><div id="drivePdfList" class="dfile-list"><span class="spinner"></span> Chargement…</div><button class="btn-drive" onclick="importSelectedPDFs()" id="btnImportPdfs" disabled style="width:100%;justify-content:center">📥 Importer les PDF sélectionnés</button></div>
-            <div id="driveExportZone" style="display:none;margin-top:10px"><button class="btn-drive" onclick="exportToDrive()" style="width:100%;justify-content:center;padding:11px">📤 Exporter le fichier Excel vers Drive</button></div>
+            <div id="driveExportZone" style="display:none;margin-top:10px"><button class="btn-drive" onclick="exportProjetDrive()" style="width:100%;justify-content:center;padding:11px">☁️ Export projet vers Drive</button></div>
           </div>
         </div>
         <div class="card">
@@ -1630,9 +1630,66 @@ function exportXLSX(){
     snack('✅ Fichier exporté !');
   }).catch(function(e){ alert(e); });
 }
+async function exportProjetDrive(){
+  if(!driveToken||!folderIds.xls){alert('Connectez-vous \u00e0 Drive.');return;}
+  snack('\u23f3 Export projet vers Drive\u2026');
+  var errors=[];
+
+  /* 1. Export Excel */
+  try{
+    await exportToDrive();
+  }catch(e){ errors.push('Excel: '+e); }
+
+  /* 2. Upload photos depuis IDB */
+  if(folderIds.photos&&db){
+    try{
+      var photos=await dbGetAll('photos');
+      if(photos&&photos.length){
+        snack('\u23f3 Upload photos ('+photos.length+')\u2026');
+        for(var i=0;i<photos.length;i++){
+          try{ await uploadPhotoToDrive(photos[i]); }catch(e){ errors.push('Photo '+photos[i].name+': '+e); }
+        }
+      }
+    }catch(e){ errors.push('Photos: '+e); }
+  }
+
+  /* 3. Upload annotations PDF (toutes les pages annotées) */
+  if(folderIds.pdf){
+    var keys=Object.keys(annotSnaps);
+    if(keys.length){
+      snack('\u23f3 Upload annotations PDF ('+keys.length+' pages)\u2026');
+      for(var j=0;j<keys.length;j++){
+        try{ await uploadAnnotSnapToDrive(keys[j],annotSnaps[keys[j]]); }catch(e){ errors.push('Annot '+keys[j]+': '+e); }
+      }
+    }
+  }
+
+  if(errors.length) snack('\u26a0\ufe0f '+errors.length+' erreur(s) — voir console');
+  else snack('\u2705 Projet export\u00e9 vers Drive !','#1e8a4a');
+}
+
+/* Upload une annotation (snap) vers Drive/Pointage/Fichiers/ */
+async function uploadAnnotSnapToDrive(key,dataUrl){
+  if(!driveToken||!folderIds.pdf) return;
+  /* key = 'nomfichier.pdf_numpage' */
+  var parts=key.split('_'); var page=parts.pop(); var pdfName=parts.join('_');
+  var fname=pdfName.replace(/\.pdf$/i,'')+'_p'+page+'_annote.png';
+  var res=await fetch(dataUrl); var blob=await res.blob();
+  var existing=await listDriveFiles(folderIds.pdf,['.png']);
+  var match=existing.filter(function(f){return f.name===fname;})[0];
+  var form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(
+    match?{name:fname}:{name:fname,parents:[folderIds.pdf]}
+  )],{type:'application/json'}));
+  form.append('file',blob);
+  var url='https://www.googleapis.com/upload/drive/v3/files'+(match?'/'+match.id:'')+'?uploadType=multipart';
+  var r=await fetch(url,{method:match?'PATCH':'POST',headers:{Authorization:'Bearer '+driveToken},body:form});
+  if(!r.ok) throw new Error('HTTP '+r.status);
+}
+
 function exportToDrive(){
-  if(!driveToken||!folderIds.xls){alert('Connectez-vous à Drive.');return;}
-  getWb().then(function(workbook){
+  if(!driveToken||!folderIds.xls) return Promise.reject('Non connecté à Drive');
+  return getWb().then(function(workbook){
     wsData.filter(function(r){return r._row>=0;}).forEach(syncRow);
     var ws=workbook.Sheets['Mater'],range=XLSX.utils.decode_range(ws['!ref']||'A1'),nextRow=range.e.r+1;
     wsData.filter(function(r){return r.isNew;}).forEach(function(row){
