@@ -488,6 +488,7 @@ input[type=number]{-moz-appearance:textfield}
         <button class="rab danger" onclick="remEffacer()"><span class="rab-ico">🗑</span><div><div class="rab-txt">Effacer tout</div><div class="rab-sub">Supprime toutes les remarques</div></div></button>
         <button class="rab" onclick="remNouvelle()"><span class="rab-ico">✏️</span><div><div class="rab-txt">Nouvelle remarque</div><div class="rab-sub">Saisie libre — préfixée de la date du jour</div></div></button>
         <button class="rab" onclick="remFrequente()"><span class="rab-ico">📋</span><div><div class="rab-txt">Remarque fréquente</div><div class="rab-sub">Liste prédéfinie et remarques de session</div></div></button>
+        <button class="rab" onclick="remEditerOuvrir()"><span class="rab-ico">✏️</span><div><div class="rab-txt">Éditer la remarque</div><div class="rab-sub">Modifier ou supprimer le texte existant</div></div></button>
       </div>
       <div id="remEditZone" style="display:none;margin-top:10px"><textarea id="remEditText" rows="5" style="width:100%;box-sizing:border-box;padding:10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;resize:vertical;color:var(--text)"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-ok btn-sm" onclick="remEditerValider()" style="flex:1">✅ Enregistrer</button><button class="btn btn-ghost btn-sm" onclick="remEditerAnnuler()">✕ Annuler</button></div></div>
       <div class="rem-new-input" id="remNewInput"><textarea id="remNewText" placeholder="Saisir votre remarque…" style="margin-top:10px"></textarea><div style="display:flex;gap:8px;margin-top:8px"><button class="btn btn-ok btn-sm" onclick="remValiderNouvelle()">✓ Ajouter</button><button class="btn btn-ghost btn-sm" onclick="document.getElementById('remNewInput').style.display='none'">Annuler</button></div></div>
@@ -1226,6 +1227,7 @@ function remEditerValider(){
   row.remarque=txt; syncRow(row); saveLocal(); updateVuBar(); renderLocalList();
   refreshRemCurrent(row); refreshRemZone(remCardId,row);
   document.getElementById('remEditZone').style.display='none';
+  closeRemPopup();
   snack('✅ Remarques modifiées');
 }
 function remEditerAnnuler(){ document.getElementById('remEditZone').style.display='none'; }
@@ -1233,7 +1235,7 @@ function remEffacer(){
   if(!remCardId) return; if(!confirm('Effacer toutes les remarques ?')) return;
   var row=getRow(remCardId); if(!row) return;
   row.remarque=''; syncRow(row); saveLocal(); updateVuBar(); renderLocalList();
-  refreshRemCurrent(row); refreshRemZone(remCardId,row); snack('🗑 Remarques effac\u00e9es');
+  refreshRemCurrent(row); refreshRemZone(remCardId,row); closeRemPopup(); snack('🗑 Remarques effac\u00e9es');
 }
 function remNouvelle(){
   var z=document.getElementById('remNewInput'); z.style.display=z.style.display==='none'?'block':'none';
@@ -1242,7 +1244,7 @@ function remNouvelle(){
 }
 function remValiderNouvelle(){
   var txt=document.getElementById('remNewText').value.trim(); if(!txt) return;
-  addRemarque(txt); document.getElementById('remNewText').value=''; document.getElementById('remNewInput').style.display='none'; snack('\u2705 Remarque ajout\u00e9e');
+  addRemarque(txt); document.getElementById('remNewText').value=''; document.getElementById('remNewInput').style.display='none'; closeRemPopup(); snack('\u2705 Remarque ajout\u00e9e');
 }
 function remFrequente(){
   var z=document.getElementById('remFreqZone'); z.style.display=z.style.display==='none'?'block':'none';
@@ -1262,7 +1264,7 @@ function renderFreqItems(){
     el.appendChild(d);
   });
 }
-function freqSelect(idx){ var el=document.getElementById('freqItems'); var item=el._all&&el._all[idx]; if(!item) return; addRemarque(item.txt); document.getElementById('remFreqZone').style.display='none'; snack('\u2705 Remarque ajout\u00e9e'); }
+function freqSelect(idx){ var el=document.getElementById('freqItems'); var item=el._all&&el._all[idx]; if(!item) return; addRemarque(item.txt); document.getElementById('remFreqZone').style.display='none'; closeRemPopup(); snack('\u2705 Remarque ajout\u00e9e'); }
 function freqSupprimer(e,idx){ e.stopPropagation(); var el=document.getElementById('freqItems'); var item=el._all&&el._all[idx]; if(!item||item.session) return; saveFreqList(getFreqList().filter(function(s){return s!==item.txt;})); renderFreqItems(); }
 function freqAjouter(){ var inp=document.getElementById('freqNewText'); var txt=inp.value.trim(); if(!txt) return; var list=getFreqList(); if(list.indexOf(txt)<0){list.unshift(txt);saveFreqList(list);} inp.value=''; renderFreqItems(); snack('\u2795 Remarque fr\u00e9quente ajout\u00e9e'); }
 document.addEventListener('click',function(e){ var p=document.getElementById('remPopup'); if(p&&p.classList.contains('open')&&e.target===p) closeRemPopup(); });
