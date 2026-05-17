@@ -1762,38 +1762,10 @@ async function importSelectedPDFs(){
   }
   renderPdfTabs(); renderPdfFileList(); snack('📄 PDF import\u00e9(s)','#1e8a4a');
 }
-async function exportToDrive(){
-  if(!wb){alert('Aucun fichier charg\u00e9.');return;} if(!driveToken||!folderIds.xls){alert('Connectez-vous \u00e0 Drive.');return;}
-  wsData.filter(function(r){return r._row>=0;}).forEach(syncRow);
-  var ws=wb.Sheets['Mater'], range=XLSX.utils.decode_range(ws['!ref']||'A1');
-  var nextRow=range.e.r+1;
-  wsData.filter(function(r){return r.isNew;}).forEach(function(row){
-    var sc=function(col,val){var addr=XLSX.utils.encode_cell({r:nextRow,c:col});ws[addr]={v:val,t:typeof val==='number'?'n':'s'};};
-    sc(COL.local,row.local);sc(COL.materiel,row.materiel);sc(COL.repere,row.repere);sc(COL.nbre,Number(row.nbre)||1);
-    if(row.lot)sc(COL.lot,row.lot);if(row.livre)sc(COL.livre,'X');if(row.installe)sc(COL.installe,'X');if(row.mes)sc(COL.mes,'X');if(row.remarque)sc(COL.remarque,row.remarque);
-    range.e.r=nextRow; nextRow++;
-  });
-  ws['!ref']=XLSX.utils.encode_range(range);
-  var exportName=fileName.replace(/\.(xls|xlsx)$/i,'')+'_pointage.xlsx';
-  var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
-  var blob=new Blob([wbout],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-  snack('\u23f3 Export vers Drive\u2026');
-  try{
-    var existing=await listDriveFiles(folderIds.xls,['.xlsx']), match=existing.filter(function(f){return f.name===exportName;})[0];
-    var form=new FormData();
-    form.append('metadata',new Blob([JSON.stringify(match?{name:exportName}:{name:exportName,parents:[folderIds.xls]})],{type:'application/json'}));
-    form.append('file',blob);
-    var url='https://www.googleapis.com/upload/drive/v3/files'+(match?'/'+match.id:'')+'?uploadType=multipart';
-    var resp=await fetch(url,{method:match?'PATCH':'POST',headers:{Authorization:'Bearer '+driveToken},body:form});
-    if(!resp.ok) throw new Error('HTTP '+resp.status);
-    snack('\u2705 Export\u00e9 : '+exportName,'#1e8a4a');
-    driveXlsFiles=await listDriveFiles(folderIds.xls,['.xls','.xlsx']); renderDriveXlsList(driveXlsFiles);
-  }catch(e){alert('Erreur export Drive : '+e.message);}
-}
 
-// ─── PERSISTANCE ─────────────────────────────────────────────────────────────
 function saveLocal(){
   try{ localStorage.setItem('tlci_data',JSON.stringify(wsData)); localStorage.setItem('tlci_lots',JSON.stringify(lots)); localStorage.setItem('tlci_fileName',fileName); }catch(e){}
+  if(db&&wb){ try{ var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'}); dbPut('xlsfile',{id:'current',data:new Uint8Array(wbout),fileName:fileName,savedAt:Date.now()}).catch(function(){}); }catch(e){} }
 }
 function savePdfLS(name,data){
   if(db){
