@@ -755,15 +755,9 @@ function openPDF(name){
   document.getElementById('pdfPh').style.display='none';
   document.getElementById('cStack').style.display='inline-block';
   clearA();
-  pdfDocs[name].getPage(1).then(function(page){
-    var vp0=page.getViewport({scale:1});
-    var wrap=document.getElementById('pdfWrap');
-    var availW=wrap.clientWidth||window.innerWidth;
-    zoom=Math.round((availW/vp0.width)*10)/10;
-    zoom=Math.max(0.3,Math.min(zoom,2.0));
-    document.getElementById('zmInfo').textContent=Math.round(zoom*100)+'%';
-    renderPage(); renderPdfTabs();
-  });
+  zoom=0.75;
+  document.getElementById('zmInfo').textContent='75%';
+  renderPage(); renderPdfTabs();
 }
 
 function renderPage(){
@@ -807,34 +801,47 @@ function chgZoom(d){ zoom=Math.max(0.4,Math.min(4,zoom+d)); document.getElementB
 
 function initPdfScroll(){
   var wrap=document.getElementById('pdfWrap'); if(!wrap) return;
-  var touchStartY=0,touchStartX=0,changing=false;
+  var touchStartY=0,touchStartX=0,touchPeakDy=0,changing=false;
   wrap.addEventListener('touchstart',function(e){
-    touchStartY=e.touches[0].clientY; touchStartX=e.touches[0].clientX;
+    touchStartY=e.touches[0].clientY;
+    touchStartX=e.touches[0].clientX;
+    touchPeakDy=0;
+  },{passive:true});
+  /* Suivre le pic maximum du mouvement pendant le geste */
+  wrap.addEventListener('touchmove',function(e){
+    if(changing) return;
+    var dy=touchStartY-e.touches[0].clientY;
+    if(Math.abs(dy)>Math.abs(touchPeakDy)) touchPeakDy=dy;
   },{passive:true});
   wrap.addEventListener('touchend',function(e){
     if(changing||!activePdf) return;
-    var dy=touchStartY-e.changedTouches[0].clientY;
     var dx=Math.abs(touchStartX-e.changedTouches[0].clientX);
-    if(dx>Math.abs(dy)||Math.abs(dy)<40) return;
+    /* Utiliser le pic du mouvement, pas la position finale */
+    var dy=touchPeakDy;
+    touchPeakDy=0;
+    if(dx>Math.abs(dy)||Math.abs(dy)<50) return;
     changing=true;
     if(dy>0&&curPage<totPages){ saveSnap();curPage++;strokes=[];renderPage(); }
     else if(dy<0&&curPage>1){ saveSnap();curPage--;strokes=[];renderPage(); }
-    setTimeout(function(){changing=false;},600);
+    setTimeout(function(){changing=false;},700);
   },{passive:true});
-  var lastWheel=0;
+  /* Molette souris (PC) */
+  var wheelAcc=0,wheelTimer=null;
   wrap.addEventListener('wheel',function(e){
-    if(changing||!activePdf) return;
-    var now=Date.now(); if(now-lastWheel<800) return; lastWheel=now;
-    var atBottom=(wrap.scrollHeight-wrap.scrollTop-wrap.clientHeight)<40;
-    var atTop=wrap.scrollTop<2;
-    if(e.deltaY>0&&atBottom&&curPage<totPages){
-      changing=true;saveSnap();curPage++;strokes=[];renderPage();
-      setTimeout(function(){wrap.scrollTop=0;changing=false;},600);
-    } else if(e.deltaY<0&&atTop&&curPage>1){
-      changing=true;saveSnap();curPage--;strokes=[];renderPage();
-      setTimeout(function(){wrap.scrollTop=wrap.scrollHeight;changing=false;},600);
-    }
-  },{passive:true});
+    if(!activePdf) return;
+    e.preventDefault();
+    if(changing) return;
+    wheelAcc+=e.deltaY;
+    clearTimeout(wheelTimer);
+    wheelTimer=setTimeout(function(){
+      if(Math.abs(wheelAcc)<50){ wheelAcc=0; return; }
+      changing=true;
+      if(wheelAcc>0&&curPage<totPages){ saveSnap();curPage++;strokes=[];renderPage(); }
+      else if(wheelAcc<0&&curPage>1){ saveSnap();curPage--;strokes=[];renderPage(); }
+      wheelAcc=0;
+      setTimeout(function(){changing=false;},600);
+    },120);
+  },{passive:false});
 }
 function renderPageAsync(){
   return new Promise(function(resolve){
