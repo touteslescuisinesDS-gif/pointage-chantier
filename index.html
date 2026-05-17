@@ -409,6 +409,7 @@ input[type=number]{-moz-appearance:textfield}
           <button class="tbtn" onclick="undoA()" title="Annuler">↩</button>
           <button class="tbtn" onclick="clearA()" title="Effacer tout" style="color:var(--warn)">🗑</button>
           <button class="tbtn" onclick="exportPage()" title="Exporter PNG">💾</button>
+          <button class="tbtn" onclick="uploadAnnotatedPdfToDrive()" title="Envoyer annotation vers Drive">☁️</button>
         </div>
         <div id="pdfWrap">
           <div class="pph" id="pdfPh"><div style="font-size:52px">📄</div><p style="font-size:14px;line-height:1.8">Chargez des PDF dans <strong>Fichiers</strong><br>puis sélectionnez-en un via les onglets</p></div>
@@ -1507,10 +1508,10 @@ async function saveAnnotPhoto(){
   var d=new Date(); var photoDate=d.getFullYear()+'_'+String(d.getMonth()+1).padStart(2,'0')+'_'+String(d.getDate()).padStart(2,'0'); var photoName=row.repere+'_'+photoDate;
   var record={repere:row.repere||'',local:row.local||'',materiel:row.materiel||'',name:photoName,date:new Date().toISOString(),dataUrl:dataUrl};
   await dbPut('photos',record);
-  // Ajouter remarque automatique
   var prevId=remCardId; remCardId=photoCardId;
   addRemarque('Voir photo '+photoName);
   remCardId=prevId;
+  if(driveToken&&folderIds.photos) uploadPhotoToDrive(record);
   closePhotoPopup(); snack('📷 Photo enregistr\u00e9e','#e67e22');
   renderPhotoGallery();
 }
@@ -1709,8 +1710,13 @@ function showDriveConnected(){ document.getElementById('driveDisc').style.displa
 async function resolveFolders(){
   folderIds.root=await findFolder('Pointage','root');
   if(!folderIds.root){snack('\u274c Dossier "Pointage" introuvable');renderDriveXlsList([]);renderDrivePdfList([]);return;}
-  folderIds.xls=await findFolder('Materiels',folderIds.root); folderIds.pdf=await findFolder('Fichiers',folderIds.root);
-  var res=await Promise.all([folderIds.xls?listDriveFiles(folderIds.xls,['.xls','.xlsx']):[],folderIds.pdf?listDriveFiles(folderIds.pdf,['.pdf']):[]]);
+  folderIds.xls=await findFolder('Materiels',folderIds.root);
+  folderIds.pdf=await findFolder('Fichiers',folderIds.root);
+  folderIds.photos=await findFolder('Photos',folderIds.root);
+  var res=await Promise.all([
+    folderIds.xls?listDriveFiles(folderIds.xls,['.xls','.xlsx']):[],
+    folderIds.pdf?listDriveFiles(folderIds.pdf,['.pdf']):[]
+  ]);
   driveXlsFiles=res[0]; renderDriveXlsList(res[0]); drivePdfFiles=res[1]; renderDrivePdfList(res[1]);
 }
 async function findFolder(name,parentId){
@@ -1770,6 +1776,53 @@ function saveLocal(){
   try{ localStorage.setItem('tlci_data',JSON.stringify(wsData)); localStorage.setItem('tlci_lots',JSON.stringify(lots)); localStorage.setItem('tlci_fileName',fileName); }catch(e){}
   if(db&&wb){ try{ var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'}); dbPut('xlsfile',{id:'current',data:new Uint8Array(wbout),fileName:fileName,savedAt:Date.now()}).catch(function(){}); }catch(e){} }
 }
+/* Upload photo vers Drive/Pointage/Photos/ */
+async function uploadPhotoToDrive(photoRecord){
+  if(!driveToken||!folderIds.photos) return;
+  try{
+    /* Convertir dataUrl en blob */
+    var res=await fetch(photoRecord.dataUrl);
+    var blob=await res.blob();
+    var fname=(photoRecord.name||'photo')+'_'+photoRecord.repere+'.jpg';
+    var form=new FormData();
+    form.append('metadata',new Blob([JSON.stringify({name:fname,parents:[folderIds.photos]})],{type:'application/json'}));
+    form.append('file',blob);
+    var r=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart',
+      {method:'POST',headers:{Authorization:'Bearer '+driveToken},body:form});
+    if(!r.ok) throw new Error('HTTP '+r.status);
+    snack('\u2601\ufe0f Photo envoy\u00e9e vers Drive','#1e8a4a');
+  }catch(e){ console.warn('uploadPhotoToDrive:',e); }
+}
+
+/* Upload PDF annot\u00e9 vers Drive/Pointage/Fichiers/ */
+async function uploadAnnotatedPdfToDrive(){
+  if(!activePdf||!driveToken||!folderIds.pdf) return;
+  /* Fusionner PDF + annotations en PNG par page serait lourd.
+     On upload l'export PNG de la page courante annotée. */
+  saveSnap();
+  var pc=document.getElementById('pdfC'),ac=document.getElementById('anotC');
+  if(!pc||!ac) return;
+  var m=document.createElement('canvas'); m.width=pc.width; m.height=pc.height;
+  var ctx=m.getContext('2d'); ctx.drawImage(pc,0,0); ctx.drawImage(ac,0,0);
+  var fname=activePdf.replace('.pdf','')+'_p'+curPage+'_annote.png';
+  m.toBlob(async function(blob){
+    try{
+      /* Chercher si fichier existe déjà */
+      var existing=await listDriveFiles(folderIds.pdf,['.png']);
+      var match=existing.filter(function(f){return f.name===fname;})[0];
+      var form=new FormData();
+      form.append('metadata',new Blob([JSON.stringify(
+        match?{name:fname}:{name:fname,parents:[folderIds.pdf]}
+      )],{type:'application/json'}));
+      form.append('file',blob);
+      var url='https://www.googleapis.com/upload/drive/v3/files'+(match?'/'+match.id:'')+'?uploadType=multipart';
+      var r=await fetch(url,{method:match?'PATCH':'POST',headers:{Authorization:'Bearer '+driveToken},body:form});
+      if(!r.ok) throw new Error('HTTP '+r.status);
+      snack('\u2601\ufe0f Page annot\u00e9e envoy\u00e9e vers Drive','#1e8a4a');
+    }catch(e){ alert('Erreur upload PDF annot\u00e9 : '+e.message); }
+  },'image/png');
+}
+
 function saveWbToIDB(){
   if(!db||!wb) return;
   try{
