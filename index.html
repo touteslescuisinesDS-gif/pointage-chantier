@@ -572,7 +572,7 @@ let viewPhotoId=null;
 // ─── INDEXEDDB ─────────────────────────────────────────────────────────────
 function initDB(){
   return new Promise(function(resolve,reject){
-    var req=indexedDB.open('tlci_chantier',3);
+    var req=indexedDB.open('tlci_chantier',6);
     req.onupgradeneeded=function(e){
       var d=e.target.result;
       if(!d.objectStoreNames.contains('photos')){
@@ -629,7 +629,7 @@ function loadXLS(inp){
   fileName=f.name;
   var r=new FileReader();
   r.onload=function(e){
-    try{ wb=XLSX.read(e.target.result,{type:'array'}); parseData(); showXLSOk(); saveLocal(); snack('📊 '+fileName+' charg\u00e9','#1e8a4a'); }
+    try{ wb=XLSX.read(e.target.result,{type:'array'}); parseData(); showXLSOk(); saveLocal(); saveWbToIDB(); snack('📊 '+fileName+' charg\u00e9','#1e8a4a'); }
     catch(err){ alert('Erreur : '+err.message); }
   };
   r.readAsArrayBuffer(f);
@@ -1604,7 +1604,10 @@ function getWb(){
     if(!db){ reject('Aucun fichier chargé'); return; }
     snack('⏳ Chargement du fichier…');
     dbGetAll('xlsfile').then(function(rows){
-      if(!rows||!rows.length){ reject('Aucun fichier chargé — veuillez importer le fichier Excel'); return; }
+      if(!rows||!rows.length){
+        reject('Le fichier Excel n\'est pas encore en cache.\nVeuillez l\'importer une fois depuis Drive ou localement\npuis l\'export fonctionnera automatiquement.');
+        return;
+      }
       try{ wb=XLSX.read(rows[0].data,{type:'array'}); if(!fileName) fileName=rows[0].fileName||'export.xlsx'; resolve(wb); }
       catch(e){ reject('Erreur lecture fichier: '+e.message); }
     }).catch(function(e){ reject('Erreur IDB: '+e); });
@@ -1744,7 +1747,7 @@ async function importSelectedXLS(){
     var r=await fetch('https://www.googleapis.com/drive/v3/files/'+file.id+'?alt=media',{headers:{Authorization:'Bearer '+driveToken}});
     if(!r.ok) throw new Error('HTTP '+r.status);
     var buf=await r.arrayBuffer(); fileName=file.name; wb=XLSX.read(new Uint8Array(buf),{type:'array'});
-    parseData(); showXLSOk(); saveLocal(); snack('📊 '+file.name+' import\u00e9','#1e8a4a');
+    parseData(); showXLSOk(); saveLocal(); saveWbToIDB(); snack('📊 '+file.name+' import\u00e9','#1e8a4a');
   }catch(e){alert('Erreur : '+e.message);}
 }
 async function importSelectedPDFs(){
@@ -1767,6 +1770,16 @@ function saveLocal(){
   try{ localStorage.setItem('tlci_data',JSON.stringify(wsData)); localStorage.setItem('tlci_lots',JSON.stringify(lots)); localStorage.setItem('tlci_fileName',fileName); }catch(e){}
   if(db&&wb){ try{ var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'}); dbPut('xlsfile',{id:'current',data:new Uint8Array(wbout),fileName:fileName,savedAt:Date.now()}).catch(function(){}); }catch(e){} }
 }
+function saveWbToIDB(){
+  if(!db||!wb) return;
+  try{
+    var wbout=XLSX.write(wb,{bookType:'xlsx',type:'array'});
+    dbPut('xlsfile',{id:'current',data:new Uint8Array(wbout),fileName:fileName,savedAt:Date.now()})
+      .then(function(){ console.log('XLS sauvegardé en IDB'); })
+      .catch(function(e){ console.warn('saveWbToIDB err:',e); });
+  }catch(e){ console.warn('saveWbToIDB serialize:',e); }
+}
+
 function savePdfLS(name,data){
   if(db){
     dbPut('pdfs',{name:name,data:new Uint8Array(data),savedAt:Date.now()})
