@@ -807,7 +807,6 @@ function initPdfScroll(){
     touchStartX=e.touches[0].clientX;
     touchPeakDy=0;
   },{passive:true});
-  /* Suivre le pic maximum du mouvement pendant le geste */
   wrap.addEventListener('touchmove',function(e){
     if(changing) return;
     var dy=touchStartY-e.touches[0].clientY;
@@ -816,14 +815,22 @@ function initPdfScroll(){
   wrap.addEventListener('touchend',function(e){
     if(changing||!activePdf) return;
     var dx=Math.abs(touchStartX-e.changedTouches[0].clientX);
-    /* Utiliser le pic du mouvement, pas la position finale */
     var dy=touchPeakDy;
     touchPeakDy=0;
-    if(dx>Math.abs(dy)||Math.abs(dy)<50) return;
+    /* Seuil bas (25px) et swipe vertical dominant */
+    if(Math.abs(dy)<25||dx>Math.abs(dy)*0.8) return;
     changing=true;
-    if(dy>0&&curPage<totPages){ saveSnap();curPage++;strokes=[];renderPage(); }
-    else if(dy<0&&curPage>1){ saveSnap();curPage--;strokes=[];renderPage(); }
-    setTimeout(function(){changing=false;},700);
+    if(dy>0&&curPage<totPages){
+      saveSnap(); curPage++; strokes=[];
+      renderPage();
+      /* Remonter en haut après rendu */
+      setTimeout(function(){ wrap.scrollTop=0; },100);
+    } else if(dy<0&&curPage>1){
+      saveSnap(); curPage--; strokes=[];
+      renderPage();
+      setTimeout(function(){ wrap.scrollTop=0; },100);
+    }
+    setTimeout(function(){changing=false;},800);
   },{passive:true});
   /* Molette souris (PC) */
   var wheelAcc=0,wheelTimer=null;
@@ -836,8 +843,13 @@ function initPdfScroll(){
     wheelTimer=setTimeout(function(){
       if(Math.abs(wheelAcc)<50){ wheelAcc=0; return; }
       changing=true;
-      if(wheelAcc>0&&curPage<totPages){ saveSnap();curPage++;strokes=[];renderPage(); }
-      else if(wheelAcc<0&&curPage>1){ saveSnap();curPage--;strokes=[];renderPage(); }
+      if(wheelAcc>0&&curPage<totPages){
+        saveSnap();curPage++;strokes=[];renderPage();
+        setTimeout(function(){ wrap.scrollTop=0; },100);
+      } else if(wheelAcc<0&&curPage>1){
+        saveSnap();curPage--;strokes=[];renderPage();
+        setTimeout(function(){ wrap.scrollTop=0; },100);
+      }
       wheelAcc=0;
       setTimeout(function(){changing=false;},600);
     },120);
