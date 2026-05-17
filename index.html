@@ -1659,6 +1659,24 @@ function exportToDrive(){
 }
 
 
+function loadScript(src,cb){ var s=document.createElement('script'); s.src=src; s.async=true; s.onload=cb; s.onerror=function(){console.error('Erreur script:',src);}; document.head.appendChild(s); }
+
+function initGoogleSDKs(){
+  loadScript('https://accounts.google.com/gsi/client',function(){
+    tokenClient=google.accounts.oauth2.initTokenClient({
+      client_id:CLIENT_ID, scope:'https://www.googleapis.com/auth/drive',
+      callback:async function(resp){
+        if(resp.error){alert('Erreur Google : '+resp.error);return;}
+        driveToken=resp.access_token; gisReady=true;
+        localStorage.setItem('tlci_drive_token',driveToken);
+        await loadUserInfo(); await resolveFolders(); showDriveConnected();
+      }
+    });
+    gisReady=true;
+    if(W._pendingLogin){W._pendingLogin=false;driveLogin();}
+  });
+}
+
 function driveLogin(){
   if(!gisReady||!tokenClient){W._pendingLogin=true;snack('\u23f3 Initialisation Google\u2026');return;}
   tokenClient.requestAccessToken({prompt:'consent'});
