@@ -40,7 +40,7 @@ body{font-family:'Segoe UI','Trebuchet MS',sans-serif;background:var(--bg);color
 .pnl-sec{padding:12px 14px;border-bottom:1px solid var(--border)}
 .pnl-sec.grow{flex:1;overflow-y:auto;border-bottom:none}
 .pnl-ttl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
-#rightPanel{flex:1;overflow-y:auto;padding:20px;background:var(--bg)}
+#rightPanel{flex:1;overflow-y:auto;padding:20px;background:var(--bg);position:relative}
 .card{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:18px;margin-bottom:14px;box-shadow:var(--shadow)}
 .card-ttl{font-size:9px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
 select,input[type=text],textarea{width:100%;background:var(--surf);border:1px solid var(--border);border-radius:var(--r);color:var(--text);padding:9px 11px;font-size:13px;appearance:none;outline:none;font-family:inherit;box-shadow:inset 0 1px 3px rgba(0,0,0,.06)}
@@ -97,6 +97,9 @@ textarea{resize:vertical;min-height:60px;line-height:1.5}
 .lbtn{display:flex;align-items:center;gap:8px;background:transparent;border:1px solid transparent;border-radius:var(--r);width:100%;padding:9px 10px;cursor:pointer;text-align:left;color:var(--text);transition:all .15s;margin-bottom:4px}
 .lbtn:hover{background:var(--light);border-color:var(--border)}
 .lbtn.active{background:#edf4fb;border-color:var(--blue)}
+.lbtn-done{border-left:3px solid var(--ok)!important}
+.lbtn-done .ln{color:var(--ok)!important;font-weight:600}
+.lbtn-done.active{background:#edf7f1!important;border-color:var(--ok)!important}
 .lbtn .ln{flex:1;font-size:11px;font-weight:600;line-height:1.3}
 .lbtn .lvu{font-size:10px;font-weight:700;flex-shrink:0}
 #matStickyHdr{position:sticky;top:0;z-index:100;background:var(--surf);border-bottom:2px solid var(--accent);margin:-20px -20px 14px -20px;box-shadow:var(--shadow2);display:none}
@@ -117,7 +120,6 @@ textarea{resize:vertical;min-height:60px;line-height:1.5}
 .mcard{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);margin-bottom:8px;box-shadow:var(--shadow)}
 .mcontent{padding:11px 14px;display:grid;grid-template-columns:56px 1fr;gap:8px 12px}
 .mleft{display:flex;flex-direction:column;align-items:center;gap:5px}
-.mrep{background:var(--surf);border:2px solid var(--blue);border-radius:6px;padding:3px 6px;font-size:10px;font-weight:700;font-family:'Courier New',monospace;color:var(--blue);text-align:center;word-break:break-all;width:100%}
 .mvu{display:flex;align-items:center;gap:3px;cursor:pointer;user-select:none;padding:2px 0}
 .mvu-box{width:16px;height:16px;border:2px solid #c9a0dc;border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;background:var(--surf);color:var(--purple);flex-shrink:0}
 .mvu-box.on{background:var(--purple);border-color:var(--purple);color:#fff}
@@ -174,6 +176,11 @@ textarea{resize:vertical;min-height:60px;line-height:1.5}
 .vb-count{font-size:12px;color:var(--muted);white-space:nowrap}
 .btn-resetvu{padding:5px 11px;border:1px solid #c9a0dc;border-radius:6px;background:var(--surf);color:var(--purple);font-size:11px;font-weight:700;cursor:pointer}
 .btn-resetvu:hover{background:#f5eefa}
+.btn-filtrevu{padding:5px 11px;border:1.5px solid var(--border2);border-radius:6px;background:var(--surf);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn-filtrevu:hover{border-color:var(--purple);color:var(--purple)}
+.btn-filtrevu.on{background:var(--purple);border-color:var(--purple);color:#fff}
+.mcard-hiding{animation:cardFadeOut .3s ease forwards;pointer-events:none}
+@keyframes cardFadeOut{0%{opacity:1;max-height:400px;margin-bottom:14px}100%{opacity:0;max-height:0;margin-bottom:0;overflow:hidden}}
 .sgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
 .scard{background:var(--card);border:1px solid var(--border);border-radius:var(--r2);padding:16px;text-align:center;box-shadow:var(--shadow)}
 .scard .sn{font-size:28px;font-weight:700;line-height:1}
@@ -275,6 +282,8 @@ input[type=number]{-moz-appearance:textfield}
 .mp-recup{background:#fde8e8;color:#c0392b;font-weight:700;border:1px solid #f5b7b1}
 .mp-dim{font-family:monospace;font-size:10px;letter-spacing:.3px}
 .mp-pdf{background:#f3eafd;color:var(--purple);border:1px solid #d4b0f0;cursor:pointer;font-weight:600}
+.mp-marque{}
+.mp-ref{}
 .mp-pdf:hover{background:#e8d5fa}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
@@ -296,6 +305,76 @@ input[type=number]{-moz-appearance:textfield}
 #cameraPopup{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;align-items:center;justify-content:center}
 #cameraPopup.open{display:flex}
 
+/* ═══ POINTAGE EN MASSE ═══════════════════════════════════════════════════ */
+#tab-masse{display:none;height:100%;flex-direction:column;position:absolute;inset:0;background:var(--bg)}
+#masseToolbar{background:var(--surf);border-bottom:2px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;flex-shrink:0;box-shadow:var(--shadow)}
+#masseFilterWrap{flex:1;min-width:180px;position:relative}
+#masseFilterWrap::before{content:'🔍';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:14px;pointer-events:none;z-index:1}
+#masseFilter{width:100%;padding:8px 10px 8px 34px;border:1.5px solid var(--border2);border-radius:8px;background:var(--surf);color:var(--text);font-size:13px;outline:none;font-family:inherit}
+#masseFilter:focus{border-color:var(--blue);box-shadow:0 0 0 2px rgba(26,122,181,.12)}
+#masseLotFilter{padding:8px 28px 8px 10px;border:1.5px solid var(--border2);border-radius:8px;background:var(--surf);color:var(--text);font-size:12px;outline:none;font-family:inherit;min-width:130px;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%235a7089' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center}
+#masseLotFilter:focus{border-color:var(--blue)}
+#masseCount{font-size:12px;color:var(--muted);white-space:nowrap;flex-shrink:0}
+#masseTableWrap{flex:1;overflow-y:auto;overflow-x:auto}
+#masseTable{width:100%;border-collapse:collapse;font-size:13px}
+#masseTable thead{position:sticky;top:0;z-index:10}
+#masseTable thead tr{background:var(--surf);border-bottom:2px solid var(--border)}
+#masseTable th{padding:9px 10px;text-align:left;font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:var(--muted);white-space:nowrap;border-right:1px solid var(--border);background:var(--surf)}
+#masseTable th:last-child{border-right:none}
+#masseTable th.th-sel{width:36px;padding:9px 8px;text-align:center}
+#masseTable th.th-mat{min-width:200px}
+#masseTable th.th-loc{min-width:120px}
+#masseTable th.th-rep{width:80px}
+#masseTable th.th-lot{width:90px}
+#masseTable th.th-ck{width:84px;text-align:center}
+#masseTable th.th-rem{min-width:160px}
+#masseTable tbody tr{border-bottom:1px solid var(--border);transition:background .1s}
+#masseTable tbody tr:hover{background:var(--card2)}
+#masseTable tbody tr.masse-selected{background:#edf4fb}
+#masseTable tbody tr.masse-flash{animation:masseFlash .6s ease}
+@keyframes masseFlash{0%{background:#d4f0e2}100%{background:transparent}}
+#masseTable td{padding:8px 10px;vertical-align:middle;border-right:1px solid var(--border)}
+#masseTable td:last-child{border-right:none}
+.td-sel{text-align:center;width:36px}
+.masse-cb{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+.cb-all{width:16px;height:16px;accent-color:var(--blue);cursor:pointer}
+.td-mat{font-weight:600;color:var(--text);line-height:1.3}
+.td-loc{font-size:11px;color:var(--muted)}
+.td-rep{font-family:'Courier New',monospace;font-size:11px;font-weight:700;color:var(--blue)}
+.td-lot{font-size:11px;color:var(--muted)}
+.masse-ck{display:inline-flex;align-items:center;justify-content:center;width:76px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--border);background:var(--card2);cursor:pointer;user-select:none;transition:all .12s;font-size:11px;font-weight:500;color:#8fa3b8;white-space:nowrap;gap:3px}
+.masse-ck:hover{border-color:var(--blue);color:var(--blue)}
+.masse-ck.on-l{border-color:var(--ok);background:#edf7f1;color:var(--ok);font-weight:700}
+.masse-ck.on-i{border-color:var(--accent);background:#fef5e8;color:var(--accent);font-weight:700}
+.masse-ck.on-m{border-color:var(--ok);background:#edf7f1;color:var(--ok);font-weight:700}
+.masse-vu{display:inline-flex;align-items:center;justify-content:center;width:44px;padding:4px 6px;border-radius:6px;border:1.5px solid var(--border);background:var(--card2);cursor:pointer;user-select:none;transition:all .12s;font-size:11px;font-weight:500;color:#8fa3b8}
+.masse-vu:hover{border-color:var(--purple);color:var(--purple)}
+.masse-vu.on-v{border-color:var(--purple);background:#f5eefa;color:var(--purple);font-weight:700}
+.td-rem{font-size:11px;color:var(--muted);cursor:pointer;max-width:180px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:color .12s}
+.td-rem:hover{color:var(--blue)}
+.td-rem.has-rem{color:var(--text);font-weight:500}
+.masse-empty{text-align:center;padding:60px 20px;color:var(--muted)}
+/* Barre d'action flottante */
+#masseActionBar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);background:var(--text);color:#fff;border-radius:16px;padding:10px 18px;display:flex;align-items:center;gap:10px;z-index:500;box-shadow:0 4px 24px rgba(0,0,0,.28);transition:transform .25s ease;flex-wrap:wrap;justify-content:center;max-width:90vw}
+#masseActionBar.show{transform:translateX(-50%) translateY(0)}
+#masseSelCount{font-size:12px;font-weight:700;color:#aac8e8;white-space:nowrap;padding-right:6px;border-right:1px solid rgba(255,255,255,.2)}
+.mab-btn{padding:7px 13px;border:1.5px solid rgba(255,255,255,.25);border-radius:8px;background:rgba(255,255,255,.1);color:#fff;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.mab-btn:hover{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5)}
+.mab-btn.mab-ok{background:rgba(30,138,74,.7);border-color:#1e8a4a}
+.mab-btn.mab-ok:hover{background:#1e8a4a}
+.mab-btn.mab-rem{background:rgba(212,130,10,.6);border-color:var(--accent)}
+.mab-btn.mab-rem:hover{background:var(--accent)}
+/* Popup remarque en masse */
+#masseRemPopup{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:600;display:none;align-items:center;justify-content:center}
+#masseRemPopup.open{display:flex}
+#masseRemBox{background:var(--surf);border-radius:var(--r2);padding:22px;width:380px;max-width:92vw;box-shadow:var(--shadow2)}
+#masseRemBox h3{font-size:14px;font-weight:700;margin-bottom:6px}
+#masseRemBox p{font-size:12px;color:var(--warn);margin-bottom:12px}
+#masseRemText{width:100%;min-height:80px;border:1.5px solid var(--border2);border-radius:var(--r);padding:9px 11px;font-size:13px;font-family:inherit;color:var(--text);background:var(--surf);resize:vertical;outline:none}
+#masseRemText:focus{border-color:var(--blue)}
+.masse-rem-btns{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+.mrem-ok{padding:8px 18px;border:none;border-radius:var(--r);background:var(--ok);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.mrem-cancel{padding:8px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--surf);color:var(--muted);font-size:13px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -306,18 +385,25 @@ input[type=number]{-moz-appearance:textfield}
   <button class="hdr-btn ok" id="btnExHdr" onclick="exportXLSX()" style="display:none">📤 Exporter XLS</button>
 </div>
 <div id="tabBar">
-  <button class="tab active" data-tab="fichiers" onclick="showTab('fichiers')">⚙️ Fichiers</button>
+  <button class="tab active" data-tab="fichiers" onclick="showTab('fichiers')">📋 Projet</button>
   <button class="tab" data-tab="pointage" onclick="showTab('pointage')">📋 Pointage</button>
   <div id="pdfTabsInBar" style="display:contents"></div>
   <button class="tab" data-tab="notes" onclick="showTab('notes')">📝 Bloc-notes</button>
   <button class="tab" data-tab="photos" onclick="showTab('photos')">📷 Photos</button>
   <button class="tab" data-tab="avancement" onclick="showTab('avancement')">📊 Avancement</button>
+  <button class="tab" data-tab="masse" onclick="showTab('masse')">⚡ Masse</button>
 </div>
 <div id="appBody">
   <div id="leftPanel" class="hidden">
     <div class="pnl-sec"><div class="pnl-ttl">Zone</div><select id="selZone" onchange="onZoneChange()"><option value="">Toutes les zones</option></select></div>
     <div class="pnl-sec"><div class="pnl-ttl">Lot</div><select id="selLot" onchange="renderMats()"><option value="">Tous les lots</option></select></div>
-    <div class="pnl-sec grow"><div class="pnl-ttl">Locaux <span id="lcnt" style="color:var(--accent)"></span></div><div id="localList"></div></div>
+    <div class="pnl-sec grow">
+      <div class="pnl-ttl" style="display:flex;align-items:center;justify-content:space-between">
+        <span>Locaux <span id="lcnt" style="color:var(--accent)"></span></span>
+        <button id="btnFiltreLocaux" onclick="toggleFiltreLocaux()" style="font-size:10px;padding:2px 7px;border:1px solid var(--border2);border-radius:5px;background:var(--surf);color:var(--muted);cursor:pointer;font-weight:600;white-space:nowrap" title="Masquer les locaux vus à 100%">👁 Cacher vus</button>
+      </div>
+      <div id="localList"></div>
+    </div>
   </div>
   <div id="rightPanel">
 
@@ -347,6 +433,11 @@ input[type=number]{-moz-appearance:textfield}
           <input type="file" id="pdfIn" accept=".pdf" multiple style="display:none" onchange="loadPDFs(this)">
         </div>
         <div class="card" id="expCard" style="display:none"><div class="card-ttl">📤 Export local</div><button class="btn btn-ok btn-block" onclick="exportXLSX()">⬇ Télécharger le fichier Excel mis à jour</button></div>
+        <div class="card" id="rapportCard" style="display:none">
+          <div class="card-ttl">📄 Rapport de pointage</div>
+          <div style="margin-bottom:12px;font-size:12px;color:var(--muted);line-height:1.6">Génère un rapport PDF en paysage A4 avec les réserves filtrées par lot, incluant une page de synthèse.</div>
+          <button class="btn btn-ok btn-block" onclick="openRapportDialog()" style="background:rgb(13,124,159);border-color:rgb(13,124,159)">📄 Générer le rapport PDF</button>
+        </div>
         <div class="card" style="text-align:center;padding:20px"><div style="font-size:26px;margin-bottom:8px">📡</div><div style="font-size:13px;color:var(--muted);line-height:1.8"><strong style="color:var(--text)">Mode hors-ligne</strong><br>Chargez tous vos fichiers avant de partir sur le chantier.</div></div>
       </div>
     </div>
@@ -359,6 +450,7 @@ input[type=number]{-moz-appearance:textfield}
           <div class="vb-wrap-s"><div class="vb-fill-s" id="vuFill" style="width:0%"></div></div>
           <span class="vb-count-s" id="vuCount">0 / 0</span>
           <button class="btn-resetvu" onclick="resetVus()">↺</button>
+          <button class="btn-filtrevu" id="btnFiltreVu" onclick="toggleFiltreVu()">👁 Filtre OFF</button>
         </div>
         <div class="loc-strip" id="matHeader" style="display:none">
           <div id="matHeaderLocal"></div>
@@ -392,11 +484,11 @@ input[type=number]{-moz-appearance:textfield}
           <div class="tsep"></div>
           <button class="tbtn" onclick="chgZoom(-0.25)">−</button><span class="ni" id="zmInfo">100%</span><button class="tbtn" onclick="chgZoom(0.25)">+</button>
           <div class="tsep"></div>
-          <button class="tbtn on" id="t-pen" onclick="setTool('pen')" title="Crayon">✏️</button>
+          <button class="tbtn" id="t-pen" onclick="setTool('pen')" title="Crayon">✏️</button>
           <button class="tbtn" id="t-hl" onclick="setTool('hl')" title="Surligneur">🖊</button>
           <button class="tbtn" id="t-arrow" onclick="setTool('arrow')" title="Flèche">➡️</button>
           <button class="tbtn" id="t-text" onclick="setTool('text')" title="Texte">T</button>
-          <button class="tbtn" id="t-hand" onclick="setTool('hand')" title="Main">✋</button>
+          <button class="tbtn on" id="t-hand" onclick="setTool('hand')" title="Main">✋</button>
           <button class="tbtn" id="t-erase" onclick="setTool('erase')" title="Gomme">⬜</button>
           <div class="tsep"></div>
           <div class="cdot sel" style="background:#c0392b" onclick="setColor('#c0392b',this)"></div>
@@ -435,6 +527,10 @@ input[type=number]{-moz-appearance:textfield}
           <button class="tbtn" onclick="undoNote()" title="Annuler">↩</button>
           <button class="tbtn" onclick="clearNotePage()" title="Effacer page" style="color:var(--warn)">🗑</button>
           <button class="tbtn" onclick="exportNotePage()" title="Exporter PNG">💾</button>
+          <div class="tsep"></div>
+          <button class="tbtn" onclick="noteZoom(1.2)" title="Zoom +">🔍+</button>
+          <button class="tbtn" onclick="noteZoom(1/1.2)" title="Zoom -">🔍-</button>
+          <span id="noteZoomLbl" style="font-size:10px;color:var(--muted);min-width:32px;text-align:center">100%</span>
         </div>
         <div id="noteWrap"><canvas id="noteCanvas"></canvas></div>
         <div class="note-page-nav">
@@ -476,9 +572,66 @@ input[type=number]{-moz-appearance:textfield}
       </div>
     </div>
 
+    <!-- ═══ ONGLET POINTAGE EN MASSE ═════════════════════════════════════════ -->
+    <div id="tab-masse" style="display:none">
+      <div id="masseToolbar">
+        <div id="masseFilterWrap">
+          <input type="text" id="masseFilter" placeholder="Filtrer par désignation…" oninput="renderMasse()" autocomplete="off">
+        </div>
+        <select id="masseLotFilter" onchange="renderMasse()">
+          <option value="">Tous les lots</option>
+        </select>
+        <span id="masseCount" style="color:var(--muted);font-size:12px"></span>
+      </div>
+      <div id="masseTableWrap">
+        <table id="masseTable">
+          <thead>
+            <tr>
+              <th class="th-sel"><input type="checkbox" class="cb-all" id="masseCheckAll" onchange="masseToogleAll(this.checked)" title="Tout sélectionner"></th>
+              <th class="th-mat">Matériel</th>
+              <th class="th-loc">Local</th>
+              <th class="th-rep">Repère</th>
+              <th class="th-lot">Lot</th>
+              <th class="th-ck">Livré</th>
+              <th class="th-ck">Installé</th>
+              <th class="th-ck">En service</th>
+              <th class="th-ck">Vu</th>
+              <th class="th-rem">Remarque</th>
+            </tr>
+          </thead>
+          <tbody id="masseBody">
+            <tr><td colspan="10" class="masse-empty"><div style="font-size:36px;margin-bottom:10px">⚡</div><div>Chargez un fichier Excel pour afficher les matériels</div></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <!-- /onglet masse -->
+
   </div>
 </div>
 
+<!-- Barre d'action flottante masse -->
+<div id="masseActionBar">
+  <span id="masseSelCount">0 sélectionné(s)</span>
+  <button class="mab-btn mab-ok" onclick="masseApply('livre')">📦 Livré</button>
+  <button class="mab-btn mab-ok" onclick="masseApply('installe')">🔧 Installé</button>
+  <button class="mab-btn mab-ok" onclick="masseApply('mes')">⚡ En service</button>
+  <button class="mab-btn" onclick="masseApply('vu')">👁 Vu ce jour</button>
+  <button class="mab-btn mab-rem" onclick="masseOpenRem()">💬 Remarque…</button>
+</div>
+
+<!-- Popup remarque en masse -->
+<div id="masseRemPopup">
+  <div id="masseRemBox">
+    <h3>Remarque groupée</h3>
+    <p>⚠️ Cette remarque écrasera les remarques existantes des matériels sélectionnés.</p>
+    <textarea id="masseRemText" placeholder="Saisir la remarque à appliquer…"></textarea>
+    <div class="masse-rem-btns">
+      <button class="mrem-cancel" onclick="masseCloseRem()">Annuler</button>
+      <button class="mrem-ok" onclick="masseValiderRem()">✓ Appliquer</button>
+    </div>
+  </div>
+</div>
 <div id="remPopup">
   <div class="rem-box">
     <div class="rem-hdr"><div class="rem-title" id="remTitle">Remarques</div><span class="rem-rep" id="remRepere"></span><button onclick="closeRemPopup()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted);padding:0 4px">✕</button></div>
@@ -546,22 +699,26 @@ input[type=number]{-moz-appearance:textfield}
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 const CLIENT_ID = '571693908469-5at2rvfit4g32e2m4ah6510b72vmt77o.apps.googleusercontent.com';
-const COL = {local:0,materiel:1,repere:2,nbre:3,recup:4,larg:5,prof:6,haut:7,lot:43,livre:78,installe:79,mes:80,remarque:81};
+const COL = {local:0,materiel:1,repere:2,nbre:3,recup:4,larg:5,prof:6,haut:7,lot:43,livre:78,installe:79,mes:80,remarque:81,marque:130,refmat:131};
 const DEFAULT_FREQ = ['D\u00e9filmer mat\u00e9riel','Pose accessoires','Housses \u00e0 fournir','Dotation bacs \u00e0 fournir','Stock\u00e9 dans r\u00e9serve','Stock\u00e9 dans chambre froide'];
 const W = window;
 
 // ─── ÉTAT ──────────────────────────────────────────────────────────────────
 let wb=null, wsData=[], lots=[], fileName='';
+let projectMOA='', projectOpe='', lotsInfo={};
+var filtreVuActif = false;
+var rapportTitre = '';
+var filtreLocauxActif = false;
 let pdfDocs={}, pdfDataStore={};
 let activePdf=null, curPage=1, totPages=0, zoom=1.0;
 let selLocal='';
 let driveToken=null, gisReady=false, tokenClient=null;
 let driveXlsFiles=[], drivePdfFiles=[], folderIds={};
 let remCardId=null, sessionRems=[];
-let curTool='pen', curColor='#c0392b', sw=3;
+let curTool='hand', curColor='#c0392b', sw=3;
 let drawing=false, strokes=[], annotSnaps={}, sx=0, sy=0;
 let isPanning=false, panStartX=0, panStartY=0, panScrollX=0, panScrollY=0;
-let notePages=[], noteCurPage=0, noteTool='pen', noteColor='#1a2332', noteSw=3;
+let notePages=[], noteCurPage=0, noteTool='pen', noteColor='#1a2332', noteSw=3, noteZoomLevel=1;
 let noteDrawing=false, noteStrokes=[];
 let noteSx=0, noteSy=0;
 let db=null;
@@ -604,8 +761,11 @@ function fmtDriveDate(iso){ if(!iso) return ''; var d=new Date(iso); return d.to
 
 // ─── TABS ──────────────────────────────────────────────────────────────────
 function showTab(t){
-  ['fichiers','pointage','plans','notes','photos','avancement'].forEach(function(n){
-    var el=document.getElementById('tab-'+n); if(el) el.style.display=n===t?'block':'none';
+  ['fichiers','pointage','plans','notes','photos','avancement','masse'].forEach(function(n){
+    var el=document.getElementById('tab-'+n);
+    if(!el) return;
+    if(n===t){ el.style.display = n==='masse' ? 'flex' : 'block'; }
+    else { el.style.display='none'; }
   });
   document.querySelectorAll('.tab').forEach(function(b){
     var bt=b.dataset.tab||'';
@@ -617,13 +777,14 @@ function showTab(t){
   if(activePdf&&t!=='plans') saveSnap();
   document.getElementById('leftPanel').classList.toggle('hidden',t!=='pointage');
   if(t==='avancement') renderAvancement();
+  if(t==='masse'){
+    populateMasseLotFilter();
+    renderMasse();
+  }
   if(t==='plans'){
     fixPdfH();
     document.getElementById('rightPanel').style.overflow='hidden';
     document.getElementById('rightPanel').style.padding='0';
-  } else {
-    document.getElementById('rightPanel').style.overflow='';
-    document.getElementById('rightPanel').style.padding='';
   }
   if(t==='notes') initNoteCanvas();
   if(t==='photos') renderPhotoGallery();
@@ -668,10 +829,33 @@ function parseData(){
       installe:String(row[COL.installe]||'').toUpperCase().trim()==='X',
       mes:    String(row[COL.mes]     ||'').toUpperCase().trim()==='X',
       remarque:String(row[COL.remarque]||'').trim(),
+      marque:String(row[COL.marque]||'').trim(),
+      refmat:String(row[COL.refmat]||'').trim(),
       vu:false, isNew:false
     });
   }
   lots=Array.from(ls).sort(); populateFilters(); renderLocalList();
+  populateMasseLotFilter();
+  // Lire onglet Client (MOA, opération)
+  var wsClient = wb.Sheets['Client'];
+  if(wsClient){
+    var clientRaw = XLSX.utils.sheet_to_json(wsClient,{header:1,defval:''});
+    var r0 = clientRaw[0]||[];
+    projectMOA = String(r0[11]||'').trim();
+    projectOpe = String(r0[12]||'').trim();
+  }
+  // Lire onglet Lots (num col A, nom col B, entreprise col D)
+  var wsLots = wb.Sheets['Lots'];
+  lotsInfo = {};
+  if(wsLots){
+    var lotsRaw = XLSX.utils.sheet_to_json(wsLots,{header:1,defval:''});
+    for(var li=1;li<lotsRaw.length;li++){
+      var lr=lotsRaw[li];
+      var lnum=String(lr[0]||'').trim();
+      if(!lnum) continue;
+      lotsInfo[lnum]={num:lnum, nom:String(lr[1]||'').trim(), entreprise:String(lr[3]||'').trim()};
+    }
+  }
 }
 
 function showXLSOk(){
@@ -681,6 +865,7 @@ function showXLSOk(){
   document.getElementById('xlsOk').style.display='block';
   document.getElementById('xlsDrop').style.display='none';
   document.getElementById('expCard').style.display='block';
+  document.getElementById('rapportCard').style.display='block';
   document.getElementById('btnExHdr').style.display='block';
   document.getElementById('hdrProj').innerHTML='<strong>'+esc(fileName.replace(/\.(xls|xlsx)$/i,''))+'</strong>';
   if(driveToken) document.getElementById('driveExportZone').style.display='block';
@@ -690,7 +875,8 @@ function clearXLS(){
   if(!confirm('Retirer le fichier Excel ?')) return;
   wb=null; wsData=[]; lots=[]; fileName=''; selLocal='';
   document.getElementById('xlsOk').style.display='none'; document.getElementById('xlsDrop').style.display='block';
-  document.getElementById('expCard').style.display='none'; document.getElementById('btnExHdr').style.display='none';
+  document.getElementById('expCard').style.display='none';
+  document.getElementById('rapportCard').style.display='none'; document.getElementById('btnExHdr').style.display='none';
   document.getElementById('hdrProj').textContent='Aucun fichier charg\u00e9';
   document.getElementById('matList').innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:44px;margin-bottom:14px">📋</div><div>Chargez un fichier Excel</div></div>';
   document.getElementById('localList').innerHTML='';
@@ -1071,11 +1257,20 @@ function renderLocalList(){
     var total=items.length, vus=items.filter(function(r){return computeVu(r);}).length;
     var pct=total?Math.round(vus/total*100):0;
     var pctColor=pct===100?'color:var(--ok);font-weight:700':'color:var(--muted)';
-    var btn=document.createElement('button'); btn.className='lbtn'+(selLocal===local?' active':'');
+    var is100 = (total>0 && vus===total);
+    var btn=document.createElement('button'); btn.className='lbtn'+(selLocal===local?' active':'')+(is100?' lbtn-done':'');
     btn.innerHTML='<span class="ln">'+esc(local)+'</span><span class="lvu" style="'+pctColor+'">'+(total>0?vus+'/'+total+' '+(pct===100?'\u2713':pct+'%'):'')+'</span>';
     btn.addEventListener('click',function(){ selLocal=local; renderLocalList(); renderMats(); });
+    if(filtreLocauxActif && is100){ btn.style.display='none'; } else { btn.style.display=''; }
     list.appendChild(btn);
   });
+  // Mettre à jour bouton filtre locaux
+  var bfl = document.getElementById('btnFiltreLocaux');
+  if(bfl){
+    bfl.style.background = filtreLocauxActif ? 'var(--ok)' : 'var(--surf)';
+    bfl.style.color = filtreLocauxActif ? '#fff' : 'var(--muted)';
+    bfl.style.borderColor = filtreLocauxActif ? 'var(--ok)' : 'var(--border2)';
+  }
 }
 
 // ─── VU CE JOUR ────────────────────────────────────────────────────────────
@@ -1090,6 +1285,44 @@ function updateVuBar(){
   var ec=document.getElementById('vuCount'); if(ec) ec.textContent=vus+' / '+total;
   var ef=document.getElementById('vuFill'); if(ef) ef.style.width=pct+'%';
 }
+function toggleFiltreLocaux(){
+  filtreLocauxActif = !filtreLocauxActif;
+  renderLocalList();
+  snack(filtreLocauxActif ? '👁 Locaux 100% masqués' : '👁 Tous les locaux affichés');
+}
+
+function toggleFiltreVu(){
+  filtreVuActif = !filtreVuActif;
+  var btn = document.getElementById('btnFiltreVu');
+  if(btn) btn.classList.toggle('on', filtreVuActif);
+  applyFiltreVu();
+}
+
+function applyFiltreVu(){
+  var btn = document.getElementById('btnFiltreVu');
+  var cards = document.querySelectorAll('#matList .mcard');
+  var masques = 0;
+  cards.forEach(function(card){
+    var row = card._rowRef;
+    if(!row) return;
+    var vu = computeVu(row);
+    if(filtreVuActif && vu){
+      masques++;
+      if(card.style.display === 'none') return;
+      card.classList.add('mcard-hiding');
+      setTimeout(function(){ card.style.display = 'none'; card.classList.remove('mcard-hiding'); }, 300);
+    } else {
+      card.style.display = '';
+      card.classList.remove('mcard-hiding');
+    }
+  });
+  if(btn){
+    btn.textContent = filtreVuActif
+      ? '👁 Filtre ON — ' + masques + ' masqué' + (masques > 1 ? 's' : '')
+      : '👁 Filtre OFF';
+  }
+}
+
 function resetVus(){
   if(!confirm('R\u00e9initialiser tous les "Vu ce jour" ?')) return;
   wsData.forEach(function(r){r.vu=false;});
@@ -1101,6 +1334,7 @@ function tglVu(e,cardId){
   row.vu=!row.vu;
   var box=document.getElementById('vubox_'+cardId); if(box){ box.classList.toggle('on',row.vu); box.textContent=row.vu?'\u2713':''; }
   saveLocal(); updateVuBar(); renderLocalList(); snack(row.vu?'👁 Vu ce jour':'👁 Marquage retir\u00e9');
+  if(filtreVuActif) setTimeout(applyFiltreVu, 320);
 }
 
 // ─── MATÉRIELS ─────────────────────────────────────────────────────────────
@@ -1128,6 +1362,7 @@ function renderMats(){
   if(!wsData.length){ list.innerHTML='<div style="text-align:center;padding:60px 20px;color:var(--muted)"><div style="font-size:44px;margin-bottom:14px">📋</div><div>Chargez un fichier Excel</div></div>'; return; }
   if(!filtered.length){ list.innerHTML='<div style="text-align:center;padding:30px;color:var(--muted)">Aucun mat\u00e9riel pour cette s\u00e9lection</div>'; return; }
   filtered.forEach(function(row,i){ list.appendChild(buildCard(row,i)); });
+  if(filtreVuActif) requestAnimationFrame(applyFiltreVu);
   updateVuBar();
 }
 
@@ -1174,6 +1409,8 @@ function buildCard(row,idx){
   if(row.lot){var s2=document.createElement('span');s2.className='mp-chip';s2.textContent='Lot : '+row.lot;mmeta.appendChild(s2);}
   if(row.recup){var s3=document.createElement('span');s3.className='mp-chip mp-recup';s3.textContent='⚠️ Récup';mmeta.appendChild(s3);}
   if(row.larg||row.prof||row.haut){var fv2=function(v){return v?Math.round(v):'-';};var s4=document.createElement('span');s4.className='mp-chip mp-dim';s4.textContent=fv2(row.larg)+'×'+fv2(row.prof)+'×'+fv2(row.haut)+' mm';mmeta.appendChild(s4);}
+  if(row.marque){var sm=document.createElement('span');sm.className='mp-chip mp-marque';sm.textContent=row.marque;mmeta.appendChild(sm);}
+  if(row.refmat){var sr=document.createElement('span');sr.className='mp-chip mp-ref';sr.textContent=row.refmat;mmeta.appendChild(sr);}
   if(Object.keys(pdfDocs).length>0&&row.repere){var s5=document.createElement('span');s5.className='mp-chip mp-pdf';s5.id='pdfbtn_'+id;s5.textContent='🔍 PDF';mmeta.appendChild(s5);}
   var mrow=document.createElement('div'); mrow.className='mrow';
   var mcks=document.createElement('div'); mcks.className='mcks';
@@ -1272,6 +1509,14 @@ function refreshRemZone(id,row){
   cont.innerHTML=remHtml+(remLines.length>0?'<span class="mrem-count">'+remLines.length+'</span>':'');
   if(isAutoVu(row)) row.vu=true;
   var box=document.getElementById('vubox_'+id); if(box){ box.classList.toggle('on',computeVu(row)); box.textContent=computeVu(row)?'\u2713':''; }
+  // Sync ligne masse si l'onglet masse est actif
+  var masseId = id.replace(/^mc_/, 'mr_');
+  var tdRem = document.getElementById('mrem_'+masseId);
+  if(tdRem){
+    tdRem.className='td-rem'+(row.remarque?' has-rem':'');
+    tdRem.textContent=row.remarque?row.remarque.split('\n').filter(Boolean).join(' · '):'Ajouter…';
+    tdRem.title=row.remarque||'Cliquer pour ajouter une remarque';
+  }
 }
 
 function addRemarque(txt){
@@ -1394,7 +1639,20 @@ function noteDelPage(){
   if(noteCurPage>=notePages.length) noteCurPage=notePages.length-1;
   loadNotePage(); updateNotePageInfo(); snack('🗑 Page supprim\u00e9e');
 }
-function updateNotePageInfo(){ document.getElementById('notePageInfo').textContent='Page '+(noteCurPage+1)+' / '+notePages.length; }
+function updateNotePageInfo(){
+  document.getElementById('notePageInfo').textContent='Page '+(noteCurPage+1)+' / '+notePages.length;
+  var lbl=document.getElementById('noteZoomLbl');
+  if(lbl) lbl.textContent=Math.round(noteZoomLevel*100)+'%';
+}
+function noteZoom(factor){
+  noteZoomLevel = Math.min(4, Math.max(0.25, noteZoomLevel*factor));
+  var canvas=document.getElementById('noteCanvas'); if(!canvas) return;
+  var wrap=document.getElementById('noteWrap'); if(!wrap) return;
+  canvas.style.transform='scale('+noteZoomLevel+')';
+  canvas.style.transformOrigin='top left';
+  wrap.style.overflow='auto';
+  updateNotePageInfo();
+}
 
 function setNoteTool(t){
   noteTool=t;
@@ -1609,7 +1867,7 @@ function renderAvancement(){
 // ─── SYNC & EXPORT ───────────────────────────────────────────────────────────
 function syncRow(row){
   if(!wb||row._row<0) return; var ws=wb.Sheets['Mater']; if(!ws) return;
-  var r=row._row+1; setCell(ws,COL.livre,r,row.livre?'X':''); setCell(ws,COL.installe,r,row.installe?'X':''); setCell(ws,COL.mes,r,row.mes?'X':''); setCell(ws,COL.remarque,r,row.remarque||'');
+  var r=row._row; setCell(ws,COL.livre,r,row.livre?'X':''); setCell(ws,COL.installe,r,row.installe?'X':''); setCell(ws,COL.mes,r,row.mes?'X':''); setCell(ws,COL.remarque,r,row.remarque||'');
 }
 function setCell(ws,col,row,val){ var addr=XLSX.utils.encode_cell({r:row,c:col}); if(!val){delete ws[addr];return;} ws[addr]={v:val,t:'s'}; }
 
@@ -1945,7 +2203,732 @@ async function loadNotePages(){
   if(notePages.length===0) notePages=[{snap:null}];
 }
 
+// ═══ POINTAGE EN MASSE ════════════════════════════════════════════════════════
+
+// État de la sélection en masse
+var masseSelected = new Set(); // Set de _row ids
+
+function getMasseFiltered(){
+  var txt = (document.getElementById('masseFilter')||{}).value || '';
+  var lot = (document.getElementById('masseLotFilter')||{}).value || '';
+  txt = txt.trim().toLowerCase();
+  return wsData
+    .filter(function(r){
+      var matchTxt = !txt || r.materiel.toLowerCase().indexOf(txt) !== -1;
+      var matchLot = !lot || r.lot === lot;
+      return matchTxt && matchLot;
+    })
+    .slice()
+    .sort(function(a,b){ return a.materiel.localeCompare(b.materiel,'fr',{sensitivity:'base'}); });
+}
+
+function getMasseRowId(row){ return 'mr_'+(row._row<0?'n'+Math.abs(row._row):row._row); }
+
+function renderMasse(){
+  if(!document.getElementById('tab-masse')) return;
+  populateMasseLotFilter();
+  var filtered = getMasseFiltered();
+  var tbody = document.getElementById('masseBody');
+  if(!tbody) return;
+  // Nettoyer sélection des lignes qui ne sont plus affichées
+  var filteredIds = new Set(filtered.map(function(r){ return r._row; }));
+  masseSelected.forEach(function(id){ if(!filteredIds.has(id)) masseSelected.delete(id); });
+  tbody.innerHTML = '';
+  if(!wsData.length){
+    tbody.innerHTML = '<tr><td colspan="10" class="masse-empty"><div style="font-size:36px;margin-bottom:10px">⚡</div><div>Chargez un fichier Excel pour afficher les matériels</div></td></tr>';
+    updateMasseActionBar(); return;
+  }
+  if(!filtered.length){
+    tbody.innerHTML = '<tr><td colspan="10" class="masse-empty"><div style="font-size:20px;margin-bottom:8px">🔍</div><div>Aucun matériel ne correspond au filtre</div></td></tr>';
+    updateMasseActionBar(); return;
+  }
+  filtered.forEach(function(row){
+    tbody.appendChild(buildMasseRow(row));
+  });
+  // Mettre à jour le compteur
+  var cnt = document.getElementById('masseCount');
+  if(cnt) cnt.textContent = filtered.length + ' matériel' + (filtered.length>1?'s':'');
+  // Mettre à jour la checkbox "tout sélectionner"
+  syncMasseCheckAll();
+  updateMasseActionBar();
+}
+
+function buildMasseRow(row){
+  var id = getMasseRowId(row);
+  var sel = masseSelected.has(row._row);
+  var vu = computeVu(row);
+  var tr = document.createElement('tr');
+  tr.id = id;
+  tr._rowRef = row;
+  if(sel) tr.classList.add('masse-selected');
+
+  // Checkbox sélection
+  var tdSel = document.createElement('td'); tdSel.className='td-sel';
+  var cb = document.createElement('input'); cb.type='checkbox'; cb.className='masse-cb';
+  cb.checked = sel;
+  cb.addEventListener('change', function(){ masseCbChange(row._row, cb.checked, tr); });
+  tdSel.appendChild(cb); tr.appendChild(tdSel);
+
+  // Matériel
+  var tdMat = document.createElement('td'); tdMat.className='td-mat';
+  tdMat.textContent = row.materiel || '(sans désignation)';
+  if(row.recup){ var rc=document.createElement('span'); rc.style.cssText='margin-left:6px;font-size:10px;color:var(--warn);font-weight:700'; rc.textContent='⚠️ Récup'; tdMat.appendChild(rc); }
+  tr.appendChild(tdMat);
+
+  // Local
+  var tdLoc = document.createElement('td'); tdLoc.className='td-loc'; tdLoc.textContent=row.local; tr.appendChild(tdLoc);
+  // Repère
+  var tdRep = document.createElement('td'); tdRep.className='td-rep'; tdRep.textContent=row.repere||'—'; tr.appendChild(tdRep);
+  // Lot
+  var tdLot = document.createElement('td'); tdLot.className='td-lot'; tdLot.textContent=row.lot||'—'; tr.appendChild(tdLot);
+
+  // Livré
+  var tdL = document.createElement('td'); tdL.style.textAlign='center';
+  var ckL = document.createElement('div'); ckL.id='mck_l_'+id; ckL.className='masse-ck'+(row.livre?' on-l':'');
+  ckL.innerHTML=(row.livre?'✅':'📦')+'<span style="font-size:10px">'+(row.livre?'Oui':'Non')+'</span>';
+  ckL.addEventListener('click',function(e){ e.stopPropagation(); masseSingleCk(row,id,'livre'); });
+  tdL.appendChild(ckL); tr.appendChild(tdL);
+
+  // Installé
+  var tdI = document.createElement('td'); tdI.style.textAlign='center';
+  var ckI = document.createElement('div'); ckI.id='mck_i_'+id; ckI.className='masse-ck'+(row.installe?' on-i':'');
+  ckI.innerHTML=(row.installe?'✅':'🔧')+'<span style="font-size:10px">'+(row.installe?'Oui':'Non')+'</span>';
+  ckI.addEventListener('click',function(e){ e.stopPropagation(); masseSingleCk(row,id,'installe'); });
+  tdI.appendChild(ckI); tr.appendChild(tdI);
+
+  // En service
+  var tdM = document.createElement('td'); tdM.style.textAlign='center';
+  var ckM = document.createElement('div'); ckM.id='mck_m_'+id; ckM.className='masse-ck'+(row.mes?' on-m':'');
+  ckM.innerHTML=(row.mes?'✅':'⚡')+'<span style="font-size:10px">'+(row.mes?'Oui':'Non')+'</span>';
+  ckM.addEventListener('click',function(e){ e.stopPropagation(); masseSingleCk(row,id,'mes'); });
+  tdM.appendChild(ckM); tr.appendChild(tdM);
+
+  // Vu ce jour
+  var tdV = document.createElement('td'); tdV.style.textAlign='center';
+  var ckV = document.createElement('div'); ckV.id='mck_v_'+id; ckV.className='masse-vu'+(vu?' on-v':'');
+  ckV.textContent = vu ? '✓' : '—';
+  ckV.addEventListener('click',function(e){ e.stopPropagation(); masseSingleVu(row,id); });
+  tdV.appendChild(ckV); tr.appendChild(tdV);
+
+  // Remarque
+  var tdRem = document.createElement('td');
+  tdRem.id='mrem_'+id;
+  tdRem.className='td-rem'+(row.remarque?' has-rem':'');
+  tdRem.title = row.remarque||'Cliquer pour ajouter une remarque';
+  tdRem.textContent = row.remarque
+    ? row.remarque.split('\n').filter(Boolean).join(' · ')
+    : 'Ajouter…';
+  tdRem.addEventListener('click',function(e){ e.stopPropagation(); openRemPopup(id); });
+  tr.appendChild(tdRem);
+
+  // Stocker la ref dans le DOM (compatibilité avec openRemPopup existant)
+  tr._rowRef = row;
+  // Pour que getRow() fonctionne avec l'id de la ligne masse
+  document.getElementById && (function(){
+    // On expose l'élément via un registre pour getRow()
+    if(!W._masseRows) W._masseRows = {};
+    W._masseRows[id] = row;
+  })();
+
+  return tr;
+}
+
+// Surcharge de getRow pour inclure les lignes masse (registre W._masseRows)
+var _origGetRow = getRow;
+function getRow(id){
+  var el = document.getElementById(id);
+  if(el && el._rowRef) return el._rowRef;
+  if(W._masseRows && W._masseRows[id]) return W._masseRows[id];
+  return null;
+}
+
+function masseCbChange(rowId, checked, tr){
+  if(checked){ masseSelected.add(rowId); tr.classList.add('masse-selected'); }
+  else { masseSelected.delete(rowId); tr.classList.remove('masse-selected'); }
+  syncMasseCheckAll();
+  updateMasseActionBar();
+}
+
+function masseToogleAll(checked){
+  var filtered = getMasseFiltered();
+  filtered.forEach(function(row){
+    if(checked) masseSelected.add(row._row);
+    else masseSelected.delete(row._row);
+    var id = getMasseRowId(row);
+    var tr = document.getElementById(id); if(tr) tr.classList.toggle('masse-selected', checked);
+    var cb = tr && tr.querySelector('.masse-cb'); if(cb) cb.checked = checked;
+  });
+  updateMasseActionBar();
+}
+
+function syncMasseCheckAll(){
+  var filtered = getMasseFiltered();
+  var allCk = document.getElementById('masseCheckAll'); if(!allCk) return;
+  if(!filtered.length){ allCk.checked=false; allCk.indeterminate=false; return; }
+  var selCount = filtered.filter(function(r){ return masseSelected.has(r._row); }).length;
+  if(selCount === 0){ allCk.checked=false; allCk.indeterminate=false; }
+  else if(selCount === filtered.length){ allCk.checked=true; allCk.indeterminate=false; }
+  else { allCk.checked=false; allCk.indeterminate=true; }
+}
+
+function updateMasseActionBar(){
+  var bar = document.getElementById('masseActionBar');
+  var cnt = document.getElementById('masseSelCount');
+  var n = masseSelected.size;
+  if(cnt) cnt.textContent = n + ' sélectionné' + (n>1?'s':'');
+  if(bar) bar.classList.toggle('show', n>0);
+}
+
+// Action individuelle sur une ligne (clic direct sur chip, pas via sélection)
+function masseSingleCk(row, id, field){
+  // Cascade
+  if(field==='mes'&&!row.mes){ row.livre=true; row.installe=true; }
+  else if(field==='installe'&&!row.installe){ row.livre=true; }
+  row[field] = !row[field];
+  if(isAutoVu(row)) row.vu=true;
+  syncRow(row); saveLocal(); renderLocalList(); updateVuBar();
+  refreshMasseRow(row, id);
+  var lbl={livre:'Livré',installe:'Installé',mes:'Mis en service'};
+  snack(row[field]?'✓ '+lbl[field]:lbl[field]+' retiré');
+}
+
+function masseSingleVu(row, id){
+  if(isAutoVu(row)){snack('✅ Vu automatique — 3 cases cochées');return;}
+  row.vu = !row.vu;
+  saveLocal(); updateVuBar(); renderLocalList();
+  refreshMasseRow(row, id);
+  snack(row.vu?'👁 Vu ce jour':'👁 Marquage retiré');
+}
+
+function refreshMasseRow(row, id){
+  var ckL = document.getElementById('mck_l_'+id);
+  var ckI = document.getElementById('mck_i_'+id);
+  var ckM = document.getElementById('mck_m_'+id);
+  var ckV = document.getElementById('mck_v_'+id);
+  var tdRem = document.getElementById('mrem_'+id);
+  var vu = computeVu(row);
+  if(ckL){ ckL.className='masse-ck'+(row.livre?' on-l':''); ckL.innerHTML=(row.livre?'✅':'📦')+'<span style="font-size:10px">'+(row.livre?'Oui':'Non')+'</span>'; }
+  if(ckI){ ckI.className='masse-ck'+(row.installe?' on-i':''); ckI.innerHTML=(row.installe?'✅':'🔧')+'<span style="font-size:10px">'+(row.installe?'Oui':'Non')+'</span>'; }
+  if(ckM){ ckM.className='masse-ck'+(row.mes?' on-m':''); ckM.innerHTML=(row.mes?'✅':'⚡')+'<span style="font-size:10px">'+(row.mes?'Oui':'Non')+'</span>'; }
+  if(ckV){ ckV.className='masse-vu'+(vu?' on-v':''); ckV.textContent=vu?'✓':'—'; }
+  if(tdRem){
+    tdRem.className='td-rem'+(row.remarque?' has-rem':'');
+    tdRem.textContent=row.remarque?row.remarque.split('\n').filter(Boolean).join(' · '):'Ajouter…';
+    tdRem.title=row.remarque||'Cliquer pour ajouter une remarque';
+  }
+  // Sync onglet pointage si visible
+  var cardId = 'mc_'+(row._row<0?'n':'')+Math.abs(row._row);
+  refreshRemZone(cardId, row);
+  var box=document.getElementById('vubox_'+cardId);
+  if(box){ box.classList.toggle('on',vu); box.textContent=vu?'✓':''; }
+}
+
+// ─── Actions groupées ──────────────────────────────────────────────────────
+function masseApply(field){
+  if(!masseSelected.size){ snack('Sélectionnez au moins un matériel'); return; }
+  var filtered = getMasseFiltered();
+  var targets = filtered.filter(function(r){ return masseSelected.has(r._row); });
+
+  // Bascule : si TOUS les sélectionnés ont déjà l'état actif → désactive, sinon active
+  var allActive;
+  if(field==='vu'){
+    allActive = targets.every(function(r){ return computeVu(r); });
+  } else {
+    allActive = targets.every(function(r){ return r[field]; });
+  }
+  var activate = !allActive;
+
+  targets.forEach(function(row){
+    var id = getMasseRowId(row);
+    if(field==='vu'){
+      if(isAutoVu(row) && !activate){ return; } // Vu auto non révocable
+      row.vu = activate;
+    } else {
+      if(activate){
+        if(field==='mes'){ row.livre=true; row.installe=true; row.mes=true; }
+        else if(field==='installe'){ row.livre=true; row.installe=true; }
+        else { row[field]=true; }
+        if(isAutoVu(row)) row.vu=true;
+      } else {
+        row[field]=false;
+      }
+    }
+    syncRow(row);
+    refreshMasseRow(row, id);
+    var tr = document.getElementById(id);
+    if(tr){ tr.classList.add('masse-flash'); setTimeout(function(){ tr.classList.remove('masse-flash'); },700); }
+  });
+  saveLocal(); renderLocalList(); updateVuBar();
+  var lbl={livre:'Livré',installe:'Installé',mes:'En service',vu:'Vu ce jour'};
+  var verb = activate ? '✅ ' : '↩ ';
+  var suffix = activate ? ' activé' : ' désactivé';
+  snack(verb+lbl[field]+suffix+' ('+targets.length+' matériel'+(targets.length>1?'s':'')+')');
+}
+
+function masseOpenRem(){
+  if(!masseSelected.size){ snack('Sélectionnez au moins un matériel'); return; }
+  document.getElementById('masseRemText').value='';
+  document.getElementById('masseRemPopup').classList.add('open');
+  setTimeout(function(){ document.getElementById('masseRemText').focus(); },80);
+}
+function masseCloseRem(){
+  document.getElementById('masseRemPopup').classList.remove('open');
+}
+function masseValiderRem(){
+  var txt = document.getElementById('masseRemText').value.trim();
+  if(!txt){ snack('Saisissez une remarque'); return; }
+  var ligne = fmtDate()+' '+txt;
+  var filtered = getMasseFiltered();
+  var targets = filtered.filter(function(r){ return masseSelected.has(r._row); });
+  targets.forEach(function(row){
+    var id = getMasseRowId(row);
+    row.remarque = ligne; // Écrasement (option validée)
+    syncRow(row);
+    refreshMasseRow(row, id);
+    var tr = document.getElementById(id);
+    if(tr){ tr.classList.add('masse-flash'); setTimeout(function(){ tr.classList.remove('masse-flash'); },700); }
+  });
+  saveLocal(); renderLocalList(); updateVuBar();
+  masseCloseRem();
+  snack('💬 Remarque appliquée à '+targets.length+' matériel'+(targets.length>1?'s':''), '#d4820a');
+}
+document.addEventListener('click',function(e){
+  var p=document.getElementById('masseRemPopup');
+  if(p&&p.classList.contains('open')&&e.target===p) masseCloseRem();
+});
+
+function populateMasseLotFilter(){
+  var sel = document.getElementById('masseLotFilter'); if(!sel) return;
+  var cur = sel.value;
+  sel.innerHTML='<option value="">Tous les lots</option>';
+  lots.forEach(function(l){ var o=document.createElement('option'); o.value=l; o.textContent=l; if(l===cur) o.selected=true; sel.appendChild(o); });
+}
+
 // ─── INIT ─────────────────────────────────────────────────────────────────────
+
+// ═══ RAPPORT DE POINTAGE ═══════════════════════════════════════════════════
+
+var LOT_COLORS = ['#dbeafe','#dcfce7','#fef9c3','#fce7f3','#fde8d0','#e8e8fc','#fde8e8','#d0fde8','#f0fde8','#fdf0d0'];
+var LOT_TEXT   = ['#1e40af','#166534','#854d0e','#9d174d','#7c3a10','#3730a3','#991b1b','#065f46','#3f6212','#78350f'];
+
+function openRapportDialog(){
+  if(!wsData.length){snack('Chargez un fichier Excel d\'abord');return;}
+  // Préremplir champs info rapport
+  var now = new Date();
+  var dateStr = ('0'+now.getDate()).slice(-2)+'/'+('0'+(now.getMonth()+1)).slice(-2)+'/'+now.getFullYear();
+  document.getElementById('rptMOA').value = projectMOA;
+  document.getElementById('rptOpe').value = projectOpe;
+  var _d=new Date(),_ds=('0'+_d.getDate()).slice(-2)+'/'+('0'+(_d.getMonth()+1)).slice(-2)+'/'+_d.getFullYear();
+  document.getElementById('rptTitre').value = rapportTitre || ('Liste des réserves restant à lever — OPR du '+_ds);
+  // Peupler le tableau des lots
+  var tbody = document.getElementById('rapportLotBody');
+  tbody.innerHTML = '';
+  var sortedLots = lots.slice().sort(function(a,b){return String(a).localeCompare(String(b),'fr',{numeric:true});});
+  sortedLots.forEach(function(l){
+    var info = lotsInfo[l]||{};
+    var tr = document.createElement('tr');
+    tr.innerHTML =
+      '<td class="td-ck"><input type="checkbox" value="'+l+'" checked style="accent-color:rgb(13,124,159);width:14px;height:14px;cursor:pointer"></td>'
+      +'<td class="td-num">'+l+'</td>'
+      +'<td><input class="rpt-lot-input" data-lot="'+l+'" data-field="nom" value="'+esc(info.nom||'')+'"></td>'
+      +'<td><input class="rpt-lot-input" data-lot="'+l+'" data-field="entreprise" value="'+esc(info.entreprise||'')+'"></td>';
+    tbody.appendChild(tr);
+  });
+  // Écouter modifications des champs lot
+  tbody.querySelectorAll('.rpt-lot-input').forEach(function(inp){
+    inp.addEventListener('input', function(){
+      var lot = inp.getAttribute('data-lot');
+      var field = inp.getAttribute('data-field');
+      if(!lotsInfo[lot]) lotsInfo[lot]={};
+      lotsInfo[lot][field] = inp.value.trim();
+      inp.classList.toggle('modified', inp.value.trim() !== '');
+      // Sync dans wb si disponible
+      if(wb && wb.Sheets['Lots']){
+        var wsL = wb.Sheets['Lots'];
+        var raw = XLSX.utils.sheet_to_json(wsL,{header:1,defval:''});
+        for(var li=1;li<raw.length;li++){
+          if(String(raw[li][0]||'').trim()===lot){
+            if(field==='nom') XLSX.utils.sheet_add_aoa(wsL,[[inp.value]],{origin:{r:li,c:1}});
+            if(field==='entreprise') XLSX.utils.sheet_add_aoa(wsL,[[inp.value]],{origin:{r:li,c:3}});
+            break;
+          }
+        }
+      }
+    });
+  });
+  // Écouter modifications MOA/Ope/Titre
+  document.getElementById('rptMOA').oninput = function(){
+    projectMOA = this.value.trim();
+    if(wb && wb.Sheets['Client']) XLSX.utils.sheet_add_aoa(wb.Sheets['Client'],[[projectMOA]],{origin:{r:0,c:11}});
+  };
+  document.getElementById('rptOpe').oninput = function(){
+    projectOpe = this.value.trim();
+    if(wb && wb.Sheets['Client']) XLSX.utils.sheet_add_aoa(wb.Sheets['Client'],[[projectOpe]],{origin:{r:0,c:12}});
+  };
+  document.getElementById('rptTitre').oninput = function(){ rapportTitre = this.value; };
+  document.getElementById('rapportDlg').classList.add('open');
+}
+
+function closeRapportDialog(){
+  document.getElementById('rapportDlg').classList.remove('open');
+}
+document.addEventListener('click',function(e){
+  var d=document.getElementById('rapportDlg');
+  if(d&&d.classList.contains('open')&&e.target===d) closeRapportDialog();
+});
+
+function genererRapport(){
+  // Lire champs modifiables depuis le dialogue
+  var rptMOA = (document.getElementById('rptMOA')||{}).value || projectMOA;
+  var rptOpe = (document.getElementById('rptOpe')||{}).value || projectOpe;
+  var now0 = new Date();
+  var dateStr0 = ('0'+now0.getDate()).slice(-2)+'/'+('0'+(now0.getMonth()+1)).slice(-2)+'/'+now0.getFullYear();
+  var rptTitre = (document.getElementById('rptTitre')||{}).value || rapportTitre || ('Liste des r\u00e9serves restant \u00e0 lever \u2014 OPR du '+dateStr0);
+  // Lots s\u00e9lectionn\u00e9s depuis le nouveau tableau
+  var masquerMES = document.getElementById('rapportMasquerMES').checked;
+  var lotChecks = document.querySelectorAll('#rapportLotBody input[type=checkbox]:checked');
+  var lotsChoisis = Array.from(lotChecks).map(function(cb){return cb.value;});
+  if(!lotsChoisis.length){snack('S\u00e9lectionnez au moins un lot');return;}
+  closeRapportDialog();
+  var dateStr = dateStr0;
+  var data = wsData.filter(function(r){
+    if(!lotsChoisis.includes(r.lot)) return false;
+    if(masquerMES && r.mes && !r.remarque) return false;
+    return true;
+  }).slice().sort(function(a,b){
+    var cl = a.local.localeCompare(b.local,'fr');
+    if(cl!==0) return cl;
+    return (a.repere||'').localeCompare(b.repere||'','fr');
+  });
+
+  // Préparer couleurs par lot
+  var sortedLots = lots.slice().sort(function(a,b){return String(a).localeCompare(String(b),'fr',{numeric:true});});
+  var lotColorMap = {};
+  sortedLots.forEach(function(l,i){
+    lotColorMap[l] = {bg: LOT_COLORS[i%LOT_COLORS.length], txt: LOT_TEXT[i%LOT_TEXT.length]};
+  });
+
+  // Statistiques par lot pour la synthèse
+  var statsLots = {};
+  lotsChoisis.forEach(function(l){ statsLots[l]={total:0,g1:0,g2:0,g3:0,g4:0,g5:0}; });
+  wsData.filter(function(r){return lotsChoisis.includes(r.lot);}).forEach(function(r){
+    var s=statsLots[r.lot]; if(!s) return;
+    s.total++;
+    var g=getStatutGauge(r);
+    s['g'+g]++;
+  });
+
+  // Date
+  var now = new Date();
+  var dateStr = ('0'+now.getDate()).slice(-2)+'/'+('0'+(now.getMonth()+1)).slice(-2)+'/'+now.getFullYear();
+
+  // Titre rapport
+  var lotsTitle = lotsChoisis.map(function(l){
+    var info=lotsInfo[l]||{}; return 'Lot '+l+(info.nom?' — '+info.nom:'');
+  }).join(' · ');
+  var entreprisesTitle = lotsChoisis.map(function(l){
+    return (lotsInfo[l]||{}).entreprise||'';
+  }).filter(Boolean).filter(function(v,i,a){return a.indexOf(v)===i;}).join(', ');
+
+  // ── Construire le HTML du rapport ──
+  var rows = '';
+  data.forEach(function(r){
+    var g = getStatutGauge(r);
+    var lc = lotColorMap[r.lot]||{bg:'#eee',txt:'#333'};
+    var barW  = [20,40,60,80,100][g-1];
+    var barClr= ['#2C2C2A','#E24B4A','#EF9F27','#E8C600','#639922'][g-1];
+    var lblClr= ['#2C2C2A','#A32D2D','#854F0B','#7a6300','#3B6D11'][g-1];
+    var lblTxt= ['À livrer','Livré — à installer','Inst. — à mettre en sce','Mis en sce avec obs.','Mis en sce sans obs.'][g-1];
+    var remHtml = r.remarque ? '<div class="rem-txt">'+esc(r.remarque)+'</div>' : '';
+    rows += '<tr>'
+      +'<td class="td-loc">'+esc(r.local)+'</td>'
+      +'<td class="td-mat">'+esc(r.materiel||'')+(r.recup?'<span class="recup-tag">Récup</span>':'')+'</td>'
+      +'<td class="td-rep">'+esc(r.repere||'—')+'</td>'
+      +'<td class="td-qty">'+(r.nbre||1)+'</td>'
+      +'<td class="td-gauge"><div class="gauge-bar" style="background:'+barClr+'!important;width:'+barW+'%;height:7px;border-radius:2px"></div>'
+      +'<div style="font-size:6.5pt;font-weight:600;color:'+lblClr+';margin-top:1px;white-space:nowrap">'+lblTxt+'</div></td>'
+      +'<td class="td-rem">'+remHtml+'</td>'
+      +'<td class="td-lot"><span style="background:'+lc.bg+'!important;color:'+lc.txt+';padding:2px 4px;border-radius:3px;font-size:6.5pt;font-weight:600;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;display:inline-block;min-width:48px;text-align:center">'+esc(r.lot)+'</span></td>'
+      +'</tr>';
+  });
+
+  // ── Page de synthèse ──
+  var totalGlobal={total:0,g1:0,g2:0,g3:0,g4:0,g5:0};
+  var synthRows='', chartRows='';
+  lotsChoisis.forEach(function(l,idx){
+    var s=statsLots[l]; if(!s) return;
+    totalGlobal.total+=s.total;
+    totalGlobal.g1+=s.g1; totalGlobal.g2+=s.g2; totalGlobal.g3+=s.g3;
+    totalGlobal.g4+=s.g4; totalGlobal.g5+=s.g5;
+    var lc=lotColorMap[l]||{bg:'#eee',txt:'#333'};
+    var info=lotsInfo[l]||{};
+    var pctMES = s.total ? Math.round(s.g5*100/s.total) : 0;
+    synthRows += '<tr>'
+      +'<td style="text-align:left;font-weight:600;width:52px">'+l+'</td>'
+      +'<td style="text-align:left">'+esc(info.nom||'')+'</td>'
+      +'<td style="text-align:left">'+esc(info.entreprise||'')+'</td>'
+      +'<td>'+s.total+'</td>'
+      +'<td style="color:#A32D2D">'+s.g1+'</td>'
+      +'<td style="color:#854F0B">'+s.g2+'</td>'
+      +'<td style="color:#854F0B">'+s.g3+'</td>'
+      +'<td style="color:#7a6300">'+s.g4+'</td>'
+      +'<td style="color:#3B6D11">'+s.g5+'</td>'
+      +'<td>'+pctMES+'%</td>'
+      +'</tr>';
+    // Barres
+    var segs='';
+    ['g1','g2','g3','g4','g5'].forEach(function(k,ki){
+      var pct=s.total?Math.round(s[k]*100/s.total):0;
+      if(!pct) return;
+      var clr=['#2C2C2A','#E24B4A','#EF9F27','#E8C600','#639922'][ki];
+      segs+='<div style="background:'+clr+'!important;width:'+pct+'%;height:100%;display:inline-flex;align-items:center;justify-content:center;font-size:5.5pt;color:#fff;font-weight:600;overflow:hidden;min-width:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important">'+pct+'%</div>';
+    });
+    chartRows += '<tr>'
+      +'<td style="text-align:right;font-size:7pt;color:#5a7a8a;width:50px;padding-right:6px">Lot '+l+'</td>'
+      +'<td style="padding:0"><div style="height:16px;background:#f0f0f0;border-radius:3px;overflow:hidden;display:flex;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important">'+segs+'</div></td>'
+      +'<td style="font-size:7pt;color:#5a7a8a;padding-left:5px;white-space:nowrap">'+s.total+' mat.</td>'
+      +'</tr>';
+  });
+  var pctMESGlobal = totalGlobal.total ? Math.round(totalGlobal.g5*100/totalGlobal.total) : 0;
+  synthRows += '<tr style="background:#f0f9fc;font-weight:600;color:rgb(13,124,159)">'
+    +'<td style="text-align:left">Total</td><td></td><td></td>'
+    +'<td>'+totalGlobal.total+'</td>'
+    +'<td>'+totalGlobal.g1+'</td>'
+    +'<td>'+totalGlobal.g2+'</td>'
+    +'<td>'+totalGlobal.g3+'</td>'
+    +'<td>'+totalGlobal.g4+'</td>'
+    +'<td>'+totalGlobal.g5+'</td>'
+    +'<td>'+pctMESGlobal+'%</td>'
+    +'</tr>';
+
+  // ── HTML complet ──
+  var html = '<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8">'
+    +'<title>Rapport pointage</title>'
+    +'<style>'
+    +'@page{size:A4 landscape;margin:0}'
+    +'*{box-sizing:border-box;margin:0;padding:0;font-family:Arial,Helvetica,sans-serif}'
+    +'body{font-size:7pt;color:#1a2332;background:#fff;padding:8mm 8mm 10mm 8mm}'
+    +'.page-header{background:rgb(13,124,159);padding:7px 12px;display:flex;align-items:center;gap:10px;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}'
+    +'.logo-box{background:#fff;border-radius:4px;padding:3px 6px;height:38px;display:flex;align-items:center;border-bottom:3px solid rgb(21,164,201);flex-shrink:0;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'.logo-txt{font-size:6.5pt;font-weight:700;color:rgb(13,124,159);line-height:1.3;text-align:center}'
+    +'.hdr-center{flex:1;min-width:0}'
+    +'.hdr-mo{font-size:7pt;color:rgba(255,255,255,.85);margin-bottom:1px}'
+    +'.hdr-big{font-size:9pt;font-weight:700;color:#fff;border-left:3px solid rgb(21,164,201);padding-left:6px;margin:2px 0}'
+    +'.hdr-meta{display:flex;gap:12px;margin-top:2px}'
+    +'.hdr-meta span{font-size:7pt;color:rgba(255,255,255,.75)}'
+    +'.hdr-meta b{color:#fff;font-weight:600}'
+    +'.hdr-right{text-align:right;flex-shrink:0}'
+    +'.hdr-date{font-size:7pt;color:rgba(255,255,255,.75)}'
+    +'.hdr-edition{font-size:8pt;color:#fff;font-weight:600}'
+    +'table.rpt{width:100%;border-collapse:collapse;margin-top:4px}'
+    +'table.rpt thead{display:table-header-group;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'table.rpt thead tr{background:#f0f9fc;border-bottom:2px solid rgb(21,164,201);-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'table.rpt thead th{font-size:6.5pt;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgb(13,124,159);padding:4px 5px;border-right:.5px solid #c0d8e4;text-align:left;vertical-align:bottom}'
+    +'table.rpt thead th:last-child{border-right:none}'
+    +'table.rpt tr{border-bottom:.5pt solid #d1dbe8;page-break-inside:avoid}'
+    +'table.rpt tbody tr:nth-child(even){background:#fafbfc;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'table.rpt td{padding:3px 5px;vertical-align:top}'
+    +'.td-loc{font-size:7pt;color:#5a7089;width:110px}'
+    +'.td-mat{font-size:7pt;color:#1a2332;line-height:1.35}'
+    +'.td-rep{font-size:7pt;font-weight:700;color:rgb(13,124,159);font-family:Courier,monospace;width:50px}'
+    +'.td-qty{font-size:7pt;text-align:center;width:24px}'
+    +'.td-gauge{width:88px}'
+    +'.gauge-bar{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important;color-adjust:exact!important}'
+    +'.td-rem{font-size:7pt;color:#5a7089;line-height:1.35}'
+    +'.td-lot{width:52px;text-align:center}'
+    +'.recup-tag{font-size:6pt;color:#A32D2D;margin-left:4px}'
+    +'.rem-txt{white-space:pre-wrap;font-size:7pt}'
+    +'.page-footer{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:space-between;padding:3px 10px;border-top:1.5px solid rgb(21,164,201);background:#f0f9fc;font-size:7pt;color:rgb(13,124,159);font-weight:600;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'.synth-page{page-break-before:always}'
+    +'.synth-kpi{display:flex;gap:8px;margin:10px 0}'
+    +'.kpi-card{flex:1;background:#f0f9fc;border-radius:5px;border:.5px solid #b8e0ec;padding:7px 10px;text-align:center;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'.kpi-num{font-size:15pt;font-weight:700;color:rgb(13,124,159)}'
+    +'.kpi-lbl{font-size:6pt;color:#5a7089;text-transform:uppercase;letter-spacing:.4px;margin-top:1px}'
+    +'.synth-title{font-size:8pt;font-weight:700;color:rgb(13,124,159);margin:10px 0 5px;padding-bottom:3px;border-bottom:1px solid #b8e0ec}'
+    +'.synth-table{width:100%;border-collapse:collapse;font-size:7pt}'
+    +'.synth-table th{background:#f0f9fc;color:rgb(13,124,159);font-size:6.5pt;letter-spacing:.4px;text-transform:uppercase;padding:3px 5px;border:.5px solid #b8e0ec;text-align:center;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}'
+    +'.synth-table td{padding:3px 5px;border:.5px solid #d1dbe8;text-align:center;font-size:7pt}'
+    +'.sign-zone{display:flex;gap:12px;margin-top:12px}'
+    +'.sign-box{flex:1;border:.5px solid #d1dbe8;border-radius:5px;padding:8px 10px;min-height:50px}'
+    +'.sign-lbl{font-size:6.5pt;color:#5a7089;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px}'
+    +'@media print{body{padding:8mm 8mm 10mm 8mm}.page-footer{position:fixed;bottom:0}}'
+    +'</style></head><body>'
+    // En-tête page détail
+    +'<div class="page-header">'
+    +'<div class="logo-box"><div class="logo-txt">TOUTES LES<br>CUISINES<br>ING&Eacute;NIERIE</div></div>'
+    +'<div class="hdr-center">'
+    +'<div class="hdr-mo">Ma\u00eetre d\'ouvrage : '+esc(rptMOA)+' &mdash; Op\u00e9ration : '+esc(rptOpe)+'</div>'
+    +'<div class="hdr-big">'+esc(rptTitre)+'</div>'
+    +'<div class="hdr-meta"><span>'+lotsTitle+'</span>'+(entreprisesTitle?'<span>Entreprise : <b>'+esc(entreprisesTitle)+'</b></span>':'')+'</div>'
+    +'</div>'
+    +'<div class="hdr-right"><div class="hdr-date">\u00c9dition du</div><div class="hdr-edition">'+dateStr+'</div></div>'
+    +'</div>'
+    // Tableau avec thead répété (Fix 2+3)
+    +'<table class="rpt">'
+    +'<thead><tr>'
+    +'<th style="width:110px">Local</th>'
+    +'<th>Mat\u00e9riel</th>'
+    +'<th style="width:50px">Rep\u00e8re</th>'
+    +'<th style="width:24px;text-align:center">Qt\u00e9</th>'
+    +'<th style="width:88px">Avancement</th>'
+    +'<th>Remarques</th>'
+    +'<th style="width:52px;text-align:center">Lot</th>'
+    +'</tr></thead>'
+    +'<tbody>'+rows+'</tbody></table>'
+    // Pied de page
+    +'<div class="page-footer"><span>&copy; Toutes les cuisines ing\u00e9nierie</span><span id="pf-pg"></span></div>'
+    // PAGE SYNTHÈSE
+    +'<div class="synth-page">'
+    +'<div class="page-header">'
+    +'<div class="logo-box"><div class="logo-txt">TOUTES LES<br>CUISINES<br>ING&Eacute;NIERIE</div></div>'
+    +'<div class="hdr-center">'
+    +'<div class="hdr-mo">Ma\u00eetre d\'ouvrage : '+esc(rptMOA)+' &mdash; Op\u00e9ration : '+esc(rptOpe)+'</div>'
+    +'<div class="hdr-big">Synth\u00e8se d\'avancement &mdash; \u00e9dit\u00e9 le '+dateStr+'</div>'
+    +'<div class="hdr-meta"><span>Lots : <b>'+lotsChoisis.join(' \u00b7 ')+'</b></span></div>'
+    +'</div>'
+    +'<div class="hdr-right"><div class="hdr-date">\u00c9dition du</div><div class="hdr-edition">'+dateStr+'</div></div>'
+    +'</div>'
+    +'<div style="padding:0 2px">'
+    // KPIs
+    +'<div class="synth-kpi">'
+    +'<div class="kpi-card"><div class="kpi-num">'+totalGlobal.total+'</div><div class="kpi-lbl">Mat\u00e9riels</div></div>'
+    +'<div class="kpi-card"><div class="kpi-num" style="color:#A32D2D">'+totalGlobal.g1+'</div><div class="kpi-lbl">\u00c0 livrer</div></div>'
+    +'<div class="kpi-card"><div class="kpi-num" style="color:#854F0B">'+totalGlobal.g2+'</div><div class="kpi-lbl">Livr\u00e9</div></div>'
+    +'<div class="kpi-card"><div class="kpi-num" style="color:#854F0B">'+totalGlobal.g3+'</div><div class="kpi-lbl">Install\u00e9</div></div>'
+    +'<div class="kpi-card"><div class="kpi-num" style="color:#7a6300">'+totalGlobal.g4+'</div><div class="kpi-lbl">MES obs.</div></div>'
+    +'<div class="kpi-card"><div class="kpi-num" style="color:#3B6D11">'+totalGlobal.g5+'</div><div class="kpi-lbl">MES ok</div></div>'
+    +'<div class="kpi-card" style="border-color:rgb(21,164,201)"><div class="kpi-num">'+pctMESGlobal+'%</div><div class="kpi-lbl">Taux MES</div></div>'
+    +'</div>'
+    // Histogramme
+    +'<div class="synth-title">Avancement par lot</div>'
+    +'<div style="margin-bottom:6px;display:flex;gap:10px;flex-wrap:wrap">'
+    +'<div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:8px;align-items:center">'
+    +'<span style="font-size:7pt;color:#5a7089"><span style="display:inline-block;width:10px;height:10px;background:#2C2C2A!important;border-radius:2px;margin-right:4px;vertical-align:middle;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important"></span>À livrer</span>'
+    +'<span style="font-size:7pt;color:#5a7089"><span style="display:inline-block;width:10px;height:10px;background:#E24B4A!important;border-radius:2px;margin-right:4px;vertical-align:middle;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important"></span>Livré — à installer</span>'
+    +'<span style="font-size:7pt;color:#5a7089"><span style="display:inline-block;width:10px;height:10px;background:#EF9F27!important;border-radius:2px;margin-right:4px;vertical-align:middle;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important"></span>Inst. — à mettre en service</span>'
+    +'<span style="font-size:7pt;color:#5a7089"><span style="display:inline-block;width:10px;height:10px;background:#E8C600!important;border-radius:2px;margin-right:4px;vertical-align:middle;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important"></span>Mis en service + observation</span>'
+    +'<span style="font-size:7pt;color:#5a7089"><span style="display:inline-block;width:10px;height:10px;background:#639922!important;border-radius:2px;margin-right:4px;vertical-align:middle;-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important"></span>Mis en service sans observation</span>'
+    +'</div>'
+    +'</div>'
+    +'<table style="width:100%;border-collapse:collapse"><tbody>'+chartRows+'</tbody></table>'
+    // Tableau détail
+    +'<div class="synth-title" style="margin-top:12px">D\u00e9tail par lot</div>'
+    +'<table class="synth-table"><thead><tr>'
+    +'<th style="text-align:left;width:52px">N° Lot</th>'
+    +'<th style="text-align:left">Nom du lot</th>'
+    +'<th style="text-align:left">Entreprise</th>'
+    +'<th>Total</th>'
+    +'<th style="color:#A32D2D">\u00c0 livrer</th>'
+    +'<th style="color:#854F0B">Livr\u00e9</th>'
+    +'<th style="color:#854F0B">Install\u00e9</th>'
+    +'<th style="color:#7a6300">MES obs.</th>'
+    +'<th style="color:#3B6D11">MES ok</th>'
+    +'<th>% MES</th>'
+    +'</tr></thead><tbody>'+synthRows+'</tbody></table>'
+    // Signatures
+    +'<div class="sign-zone">'
+    +'<div class="sign-box"><div class="sign-lbl">Visa ma\u00eetre d\'ouvrage</div></div>'
+    +'<div class="sign-box"><div class="sign-lbl">Visa ma\u00eetre d\'\u0153uvre</div></div>'
+    +'<div class="sign-box"><div class="sign-lbl">Visa entreprise</div></div>'
+    +'</div>'
+    +'</div></div>'
+    +'<script>document.getElementById(\"pf-pg\").textContent=\"Page 1 / \"+(document.querySelectorAll(\".synth-page\").length+1);<\/script>'
+    +'</body></html>';
+
+  var win = window.open('','_blank','width=1100,height=800');
+  win.document.write(html);
+  win.document.close();
+  setTimeout(function(){ win.print(); }, 600);
+}
+
+function rapportToutCocher(state){
+  document.querySelectorAll('#rapportLotBody input[type=checkbox]').forEach(function(cb){ cb.checked=state; });
+  var all = document.getElementById('rptCheckAll'); if(all) all.checked=state;
+}
+
+function getStatutGauge(r){
+  if(r.mes){ return r.remarque ? 4 : 5; }
+  if(r.installe) return 3;
+  if(r.livre) return 2;
+  return 1;
+}
+
+// ── Popup dialogue rapport ────────────────────────────────────────────────
+
+</script>
+<!-- ═══ DIALOGUE RAPPORT ══════════════════════ -->
+<style>
+#rapportDlg{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:700;display:none;align-items:center;justify-content:center}
+#rapportDlg.open{display:flex}
+#rapportBox{background:var(--surf);border-radius:var(--r2);padding:24px 28px;width:700px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow2)}
+#rapportBox h2{font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;padding-bottom:10px;border-bottom:2px solid rgb(21,164,201)}
+.rpt-section{font-size:10px;font-weight:700;letter-spacing:.8px;text-transform:uppercase;color:rgb(13,124,159);margin-bottom:8px;margin-top:16px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.rpt-field{margin-bottom:10px}
+.rpt-field label{font-size:11px;font-weight:600;color:var(--muted);display:block;margin-bottom:4px}
+.rpt-field input[type=text]{width:100%;padding:7px 10px;border:1.5px solid var(--border2);border-radius:var(--r);font-size:12px;font-family:inherit;color:var(--text);background:var(--surf);outline:none}
+.rpt-field input[type=text]:focus{border-color:rgb(13,124,159);box-shadow:0 0 0 2px rgba(13,124,159,.12)}
+#rapportLotTable{width:100%;border-collapse:collapse;font-size:12px;margin-top:6px}
+#rapportLotTable thead tr{background:rgb(240,249,252)}
+#rapportLotTable th{padding:6px 8px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:rgb(13,124,159);border-bottom:2px solid rgb(21,164,201);text-align:left}
+#rapportLotTable th.th-ck{width:36px;text-align:center}
+#rapportLotTable th.th-num{width:64px}
+#rapportLotTable td{padding:4px 6px;border-bottom:0.5px solid var(--border);vertical-align:middle}
+#rapportLotTable td.td-ck{text-align:center}
+#rapportLotTable td.td-num{font-family:monospace;font-size:11px;font-weight:700;color:rgb(13,124,159)}
+.rpt-lot-input{width:100%;padding:4px 7px;border:1px solid transparent;border-radius:5px;font-size:11px;font-family:inherit;color:var(--text);background:transparent;outline:none}
+.rpt-lot-input:focus{border-color:rgb(13,124,159);background:var(--surf)}
+.rpt-lot-input.modified{border-color:var(--accent)!important;background:#fffbf0!important}
+.rpt-selall{font-size:11px;color:rgb(13,124,159);cursor:pointer;text-decoration:underline;display:inline-block}
+.rpt-options{margin-top:8px;display:flex;flex-direction:column;gap:8px}
+.rpt-opt-row{font-size:12px;color:var(--text);display:flex;align-items:center;gap:8px;cursor:pointer}
+.rpt-opt-row input{width:15px;height:15px;accent-color:rgb(13,124,159);cursor:pointer;flex-shrink:0}
+.rpt-btns{display:flex;gap:8px;margin-top:18px;justify-content:flex-end;align-items:center}
+.rpt-save-hint{font-size:11px;color:var(--muted);flex:1;font-style:italic}
+.rpt-btn-ok{padding:9px 20px;border:none;border-radius:var(--r);background:rgb(13,124,159);color:#fff;font-size:13px;font-weight:700;cursor:pointer}
+.rpt-btn-ok:hover{background:rgb(21,164,201)}
+.rpt-btn-cancel{padding:9px 14px;border:1px solid var(--border);border-radius:var(--r);background:var(--surf);color:var(--muted);font-size:13px;cursor:pointer}
+</style>
+<div id="rapportDlg">
+  <div id="rapportBox">
+    <h2>📄 Générer le rapport de pointage</h2>
+
+    <div class="rpt-section">Informations du rapport</div>
+    <div class="rpt-field"><label>Maître d’ouvrage</label><input type="text" id="rptMOA" placeholder="Nom du maître d’ouvrage"></div>
+    <div class="rpt-field"><label>Opération</label><input type="text" id="rptOpe" placeholder="Nom de l’opération"></div>
+    <div class="rpt-field"><label>Titre du rapport</label><input type="text" id="rptTitre" placeholder="Titre du rapport"></div>
+
+    <div class="rpt-section">Lots à inclure</div>
+    <div style="margin-bottom:6px;display:flex;align-items:center;gap:12px">
+      <span class="rpt-selall" onclick="rapportToutCocher(true)">Tout cocher</span>
+      <span class="rpt-selall" onclick="rapportToutCocher(false)">Tout décocher</span>
+      <span style="font-size:11px;color:var(--muted);font-style:italic">Les modifications sont mémorisées et exportées dans le XLS</span>
+    </div>
+    <table id="rapportLotTable">
+      <thead><tr>
+        <th class="th-ck"><input type="checkbox" id="rptCheckAll" onchange="rapportToutCocher(this.checked)" style="accent-color:rgb(13,124,159);width:14px;height:14px;cursor:pointer"></th>
+        <th class="th-num">N° Lot</th>
+        <th>Nom du lot</th>
+        <th>Entreprise</th>
+      </tr></thead>
+      <tbody id="rapportLotBody"></tbody>
+    </table>
+
+    <div class="rpt-section">Options</div>
+    <div class="rpt-options">
+      <label class="rpt-opt-row">
+        <input type="checkbox" id="rapportMasquerMES">
+        Masquer les matériels mis en service sans observation (lignes 5/5)
+      </label>
+    </div>
+
+    <div class="rpt-btns">
+      <span class="rpt-save-hint">💾 Modifications automatiquement mémorisées</span>
+      <button class="rpt-btn-cancel" onclick="closeRapportDialog()">Annuler</button>
+      <button class="rpt-btn-ok" onclick="genererRapport()">📄 Générer le PDF</button>
+    </div>
+  </div>
+</div>
+<script>
 window.addEventListener('load',async function(){
   try{ await initDB(); }catch(e){ console.warn('IndexedDB non disponible',e); }
   loadLocal();
